@@ -11,6 +11,21 @@
             "cStandard": "c11",
             "cppStandard": "c++14",
             "intelliSenseMode": "linux-clang-x64"
+        },
+        {
+            "name": "NDS",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/opt/devkitpro/libnds/include/",
+                "/opt/devkitpro/libnds/include/**"
+            ],
+            "defines": [
+                "ARM9=1"
+            ],
+            "compilerPath": "/opt/devkitpro/devkitARM/bin/arm-none-eabi-gcc",
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "linux-gcc-arm"
         }
     ],
     "version": 4
