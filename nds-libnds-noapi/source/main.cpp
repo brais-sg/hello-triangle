@@ -97,16 +97,25 @@ drawlist_entry_t drawlist[] = {
 	(_BV(6) | _BV(7) | (31 << 16)), // Enable back surface drawing, front surface drawing (No culling), and solid alpha
 
 	// First vertex (Normalized Device Coordinates?)
+	CMD_VTXCOLOR,
+	31,
+
 	CMD_VTX16,
 	VTX16_XYARGS(FLOAT2VFIXED16(0.f),FLOAT2VFIXED16(.5f)),
 	VTX16_ZARGS(FLOAT2VFIXED16(0.f)),
 
 	// Second vertex
+	CMD_VTXCOLOR,
+	(31 << 10),
+
 	CMD_VTX16,
 	VTX16_XYARGS(FLOAT2VFIXED16(-.5f),FLOAT2VFIXED16(-.5f)),
 	VTX16_ZARGS(FLOAT2VFIXED16(0.f)),
 
 	// Third vertex
+	CMD_VTXCOLOR,
+	(31 << 15),
+
 	CMD_VTX16,
 	VTX16_XYARGS(FLOAT2VFIXED16(.5f),FLOAT2VFIXED16(-.5f)),
 	VTX16_ZARGS(FLOAT2VFIXED16(0.f)),
@@ -131,8 +140,6 @@ int main() {
 
 	// Disable texturing, shading, fog...
 	DISP3DCNT = 0;
-
-
 
 	while(1) {
 		scanKeys();
