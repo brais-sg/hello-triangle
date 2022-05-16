@@ -25,7 +25,8 @@
             "compilerPath": "/opt/devkitpro/devkitARM/bin/arm-none-eabi-gcc",
             "cStandard": "c11",
             "cppStandard": "c++17",
-            "intelliSenseMode": "linux-gcc-arm"
+            "intelliSenseMode": "linux-gcc-arm",
+            "configurationProvider": "ms-vscode.makefile-tools"
         }
     ],
     "version": 4

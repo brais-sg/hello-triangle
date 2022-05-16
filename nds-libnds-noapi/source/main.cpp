@@ -92,7 +92,6 @@ drawlist_entry_t drawlist[] = {
 	CMD_BEGINVTX,
 	0, // Triangles
 
-
 	CMD_POLYATTR,
 	(_BV(6) | _BV(7) | (31 << 16)), // Enable back surface drawing, front surface drawing (No culling), and solid alpha
 
@@ -121,7 +120,7 @@ drawlist_entry_t drawlist[] = {
 	VTX16_ZARGS(FLOAT2VFIXED16(0.f)),
 
 
-	CMD_ENDVTX,
+	// CMD_ENDVTX,
 	CMD_SWPBUFFERS,
 	0
 };
@@ -138,8 +137,23 @@ int main() {
 
 	powerOn(POWER_3D_CORE | POWER_MATRIX);
 
+	// TODO: Clear matrix stack
+	// TODO: This, without API
+	// glResetMatrixStack();
+	// glFlush(0);
+
+	// glClearColor(0,0,0,31);
+	// glClearPolyID(0);
+
+	// glClearDepth(GL_MAX_DEPTH);
+
+	// GFX_TEX_FORMAT = 0;
+	// GFX_POLY_FORMAT = 0;
+
+
 	// Disable texturing, shading, fog...
 	DISP3DCNT = 0;
+
 
 	while(1) {
 		scanKeys();
@@ -147,7 +161,7 @@ int main() {
 		u16 keys = keysDown();
 		if(keys & KEY_START) break;
 
-		cpuSendDrawlist(drawlist, sizeof(drawlist));
+		cpuSendDrawlist(drawlist, sizeof(drawlist) / sizeof(uint32_t));
 
 		swiWaitForVBlank();
 	}
