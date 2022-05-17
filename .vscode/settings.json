@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "callbacks.h": "c",
+        "pspdisplay.h": "c"
+    }
+}

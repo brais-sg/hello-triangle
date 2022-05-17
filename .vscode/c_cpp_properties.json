@@ -44,6 +44,25 @@
             "cStandard": "c11",
             "cppStandard": "c++14",
             "intelliSenseMode": "linux-gcc-arm"
+        },
+        {
+            "name": "PSP (PSPSDK)",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/usr/local/pspdev/include/**",
+                "/usr/local/pspdev/psp/include/",
+                "/usr/local/pspdev/psp/include/**",
+                "/usr/local/pspdev/psp/sdk/include/",
+                "/usr/local/pspdev/psp/sdk/include/**"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/clang",
+            "cStandard": "c11",
+            "cppStandard": "c++14",
+            "intelliSenseMode": "linux-clang-x64",
+            "compilerArgs": [
+                "/usr/local/pspdev/bin/psp-gcc"
+            ]
         }
     ],
     "version": 4

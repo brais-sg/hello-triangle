@@ -8,7 +8,7 @@ make: *** No rule to make target 'all'.  Stop.
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Mon May 16 19:14:30 2022
+# Make data base, printed on Tue May 17 16:49:28 2022
 
 # Variables
 
@@ -29,7 +29,9 @@ VSCODE_LOG_NATIVE = false
 # automatic
 ?D = $(patsubst %/,%,$(dir $?))
 # environment
-SESSION_MANAGER = local/Comet:@/tmp/.ICE-unix/1252,unix/Comet:/tmp/.ICE-unix/1252
+PLATFORMIO_IDE = 2.4.3
+# environment
+SESSION_MANAGER = local/Thunder:@/tmp/.ICE-unix/1530,unix/Thunder:/tmp/.ICE-unix/1530
 # automatic
 @D = $(patsubst %/,%,$(dir $@))
 # environment
@@ -69,6 +71,8 @@ VSCODE_VERBOSE_LOGGING = true
 # environment
 VITASDK = /usr/local/vitasdk
 # environment
+WASMER_DIR = /home/brais/.wasmer
+# environment
 LESSOPEN = | /usr/bin/lesspipe %s
 # environment
 VSCODE_CWD = /home/brais
@@ -77,7 +81,7 @@ XDG_SESSION_PATH = /org/freedesktop/DisplayManager/Session0
 # default
 MAKE_HOST := x86_64-pc-linux-gnu
 # environment
-PATH = /usr/local/vitasdk/bin:/home/brais/Android/Sdk/platform-tools:/home/brais/Android/Sdk/tools:/home/brais/android-ndk-r21e:/opt/devkitpro/tools/bin:/opt/devkitpro/tools/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/usr/local/pspdev/bin:/usr/local/pspdev/bin:/usr/local/pspdev/bin:/usr/local/ps2dev/bin:/usr/local/ps2dev/ee/bin:/usr/local/ps2dev/iop/bin:/usr/local/ps2dev/dvp/bin:/usr/local/ps2dev/ps2sdk/bin:/usr/local/ps3dev/bin:/usr/local/ps3dev/ppu/bin:/usr/local/ps3dev/spu/bin
+NO_PROXY = 127.0.0.1
 # environment
 PS2DEV = /usr/local/ps2dev
 # environment
@@ -94,8 +98,6 @@ XDG_MENU_PREFIX = xfce-
 VSCODE_LOG_STACK = false
 # environment
 ELECTRON_RUN_AS_NODE = 1
-# environment
-ANDROID_HOME = /home/brais/Android/Sdk
 # default
 .FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell archives jobserver output-sync check-symlink load
 # environment
@@ -121,7 +123,7 @@ QT_QPA_PLATFORMTHEME = gtk2
 # environment
 XDG_SEAT = seat0
 # environment
-SSH_AGENT_PID = 1339
+SSH_AGENT_PID = 1618
 # environment
 ORIGINAL_XDG_CURRENT_DESKTOP = XFCE
 # environment
@@ -137,7 +139,7 @@ VSCODE_CODE_CACHE_PATH = /home/brais/.config/Code/CachedData/da15b6fd3ef856477bf
 # environment
 LOGNAME = brais
 # environment
-APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = 1
+APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = true
 # environment
 VSCODE_HANDLES_UNCAUGHT_ERRORS = true
 # automatic
@@ -150,20 +152,24 @@ CLUTTER_BACKEND = x11
 DEVKITPRO = /opt/devkitpro
 # environment
 MAKELEVEL := 0
+# environment
+PLATFORMIO_PATH = /home/brais/.platformio/penv/bin:/home/brais/.platformio/penv:/home/brais/.platformio/python3/bin:/home/brais/.local/bin:/usr/local/vitasdk/bin:/home/brais/.wasmer/bin:/opt/devkitpro/tools/bin:/home/brais/.cargo/bin:/home/brais/.local/bin:/opt/devkitpro/tools/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/brais/.wasmer/globals/wapm_packages/.bin:/usr/local/pspdev/bin:/usr/local/ps2dev/bin:/usr/local/ps2dev/ee/bin:/usr/local/ps2dev/iop/bin:/usr/local/ps2dev/dvp/bin:/usr/local/ps2dev/ps2sdk/bin
 # default
 MAKE = $(MAKE_COMMAND)
 # default
 MAKECMDGOALS := all
 # environment
-ANDROID_NDK_HOME = /home/brais/android-ndk-r21e
+PATH = /home/brais/.local/bin:/usr/local/vitasdk/bin:/home/brais/.wasmer/bin:/opt/devkitpro/tools/bin:/home/brais/.cargo/bin:/home/brais/.local/bin:/opt/devkitpro/tools/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/brais/.wasmer/globals/wapm_packages/.bin:/usr/local/pspdev/bin:/usr/local/ps2dev/bin:/usr/local/ps2dev/ee/bin:/usr/local/ps2dev/iop/bin:/usr/local/ps2dev/dvp/bin:/usr/local/ps2dev/ps2sdk/bin
 # environment
 DEVKITARM = /opt/devkitpro/devkitARM
 # environment
 SHLVL = 0
 # environment
-PS3DEV = /usr/local/ps3dev
+WASMER_CACHE_DIR = /home/brais/.wasmer/cache
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-22313474-afd3-497b-ac5e-0bb8bf7d1251.sock
+JAVA_HOME = /usr/lib/jvm/java-11-openjdk-amd64
+# environment
+VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-fd8f6c71-c4f3-4129-8e0c-1440d80640bc.sock
 # environment
 XDG_SESSION_ID = c2
 # environment
@@ -211,9 +217,9 @@ MAKEFILES :=
 # automatic
 <F = $(notdir $<)
 # environment
-LC_ALL = C
+PLATFORMIO_CALLER = vscode
 # environment
-PSL1GHT = /usr/local/ps3dev
+LC_ALL = C
 # automatic
 ^F = $(notdir $^)
 # default
@@ -229,9 +235,9 @@ PICO_SDK_PATH = /home/brais/pico-sdk/
 # environment
 LANG = C
 # environment
-VSCODE_PID = 2160
+VSCODE_PID = 6624
 # variable set hash-table stats:
-# Load=109/1024=11%, Rehash=0, Collisions=14/131=11%
+# Load=112/1024=11%, Rehash=0, Collisions=15/134=11%
 
 # Pattern-specific Variable Values
 
@@ -239,14 +245,15 @@ VSCODE_PID = 2160
 
 # Directories
 
-# . (device 66309, inode 7998697): 11 files, no impossibilities.
+# . (device 66308, inode 4587609): 13 files, no impossibilities.
 
-# 11 files, no impossibilities in 1 directories.
+# 13 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
 # No implicit rules.
 
+ 
 # Files
 
 # Not a target:
@@ -284,7 +291,6 @@ GNUmakefile:
 #  Failed to be updated.
 
 # files hash-table stats:
- 
 # Load=6/1024=1%, Rehash=0, Collisions=0/15=0%
 # VPATH Search Paths
 
@@ -292,12 +298,12 @@ GNUmakefile:
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 19 / storage = 192 B / avg = 10 B
-# current buf: size = 8162 B / used = 192 B / count = 19 / avg = 10 B
+# strcache buffers: 1 (0) / strings = 21 / storage = 219 B / avg = 10 B
+# current buf: size = 8162 B / used = 219 B / count = 21 / avg = 10 B
 
-# strcache performance: lookups = 22 / hit rate = 13%
+# strcache performance: lookups = 24 / hit rate = 12%
 # hash-table stats:
-# Load=19/8192=0%, Rehash=0, Collisions=1/22=5%
-# Finished Make data base on Mon May 16 19:14:30 2022
+# Load=21/8192=0%, Rehash=0, Collisions=1/24=4%
+# Finished Make data base on Tue May 17 16:49:28 2022
 
  
