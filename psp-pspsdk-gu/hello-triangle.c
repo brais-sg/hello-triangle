@@ -78,7 +78,6 @@ int main(int argc, char* argv[]){
     // Turn on display
 	sceGuDisplay(GU_TRUE);
 
-
     while(running()){
         sceGuStart(GU_DIRECT, list);
 
@@ -98,7 +97,7 @@ int main(int argc, char* argv[]){
         sceGumLoadIdentity();
 
         // Red?
-        // sceGuColor(0xff0000ff);
+        sceGuColor(0xff000000);
 
         // Allocate memory for the triangle vertices
         struct VertexColor* vertices = (struct VertexColor*) sceGuGetMemory(3 * sizeof(struct VertexColor));
@@ -122,7 +121,6 @@ int main(int argc, char* argv[]){
         vertices[2].color = 0xff0000ff;
 
         sceGuDrawArray(GU_TRIANGLES, GU_VERTEX_32BITF | GU_COLOR_8888 | GU_TRANSFORM_2D, 3, 0, vertices);
-
 
         sceGuFinish();
         sceGuSync(0,0);
