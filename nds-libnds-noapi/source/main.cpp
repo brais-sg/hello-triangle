@@ -194,7 +194,7 @@ int main() {
 	addEntry(0);
 
 	// Needed for DMA
-	DC_FlushRange(drawList, drawListElements);
+	DC_FlushRange(drawList, drawListElements * 4);
 
 	// Disable texturing, shading, fog...
 	DISP3DCNT = 0;
