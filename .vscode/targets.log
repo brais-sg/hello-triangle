@@ -1,6 +1,4 @@
 make all --print-data-base --no-builtin-variables --no-builtin-rules --question
-make: *** No rule to make target 'all'.  Stop.
-
 # GNU Make 4.2.1
 # Built for x86_64-pc-linux-gnu
 # Copyright (C) 1988-2016 Free Software Foundation, Inc.
@@ -8,7 +6,7 @@ make: *** No rule to make target 'all'.  Stop.
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Tue May 17 19:34:27 2022
+# Make data base, printed on Tue May 17 23:16:22 2022
 
 # Variables
 
@@ -43,7 +41,7 @@ SHELL = /bin/sh
 # environment
 GDM_LANG = es_ES
 # environment
-VSCODE_NLS_CONFIG = {"locale":"es","availableLanguages":{"*":"es"},"_languagePackId":"81204e1a79a1a53aa2a74c293087d05a.es","_translationsConfigFile":"/home/brais/.config/Code/clp/81204e1a79a1a53aa2a74c293087d05a.es/tcf.json","_cacheRoot":"/home/brais/.config/Code/clp/81204e1a79a1a53aa2a74c293087d05a.es","_resolvedLanguagePackCoreLocation":"/home/brais/.config/Code/clp/81204e1a79a1a53aa2a74c293087d05a.es/da15b6fd3ef856477bf6f4fb29ba1b7af717770d","_corruptedFile":"/home/brais/.config/Code/clp/81204e1a79a1a53aa2a74c293087d05a.es/corrupted.info","_languagePackSupport":true}
+VSCODE_NLS_CONFIG = {"locale":"es","availableLanguages":{"*":"es"},"_languagePackId":"125a9a608456aa5e8a25d0a18c7b1d68.es","_translationsConfigFile":"/home/brais/.config/Code/clp/125a9a608456aa5e8a25d0a18c7b1d68.es/tcf.json","_cacheRoot":"/home/brais/.config/Code/clp/125a9a608456aa5e8a25d0a18c7b1d68.es","_resolvedLanguagePackCoreLocation":"/home/brais/.config/Code/clp/125a9a608456aa5e8a25d0a18c7b1d68.es/da15b6fd3ef856477bf6f4fb29ba1b7af717770d","_corruptedFile":"/home/brais/.config/Code/clp/125a9a608456aa5e8a25d0a18c7b1d68.es/corrupted.info","_languagePackSupport":true}
 # environment
 _ = /usr/bin/make
 # environment
@@ -71,7 +69,7 @@ VITASDK = /usr/local/vitasdk
 # environment
 DEVKITA64 = /opt/devkitpro//devkitA64
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-39603df3-bb1f-4de4-92c1-bcd384aab5be.sock
+VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-28da1e18-a0f3-44f0-9cca-f260d2b0efa8.sock
 # environment
 VSCODE_CWD = /home/brais
 # environment
@@ -141,7 +139,7 @@ VSCODE_CODE_CACHE_PATH = /home/brais/.config/Code/CachedData/da15b6fd3ef856477bf
 # environment
 LOGNAME = brais
 # environment
-APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = true
+APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = 1
 # environment
 NVM_CD_FLAGS = 
 # environment
@@ -243,7 +241,7 @@ PICO_SDK_PATH = /home/brais/pico-sdk/
 # environment
 LANG = C
 # environment
-VSCODE_PID = 56893
+VSCODE_PID = 771407
 # environment
 NVM_RC_VERSION = 
 # variable set hash-table stats:
@@ -278,6 +276,9 @@ Makefile:
 #  File does not exist.
 #  File has been updated.
 #  Failed to be updated.
+ 
+make: *** No rule to make target 'all'.  Stop.
+
 
 # Not a target:
 makefile:
@@ -300,7 +301,6 @@ GNUmakefile:
 #  Failed to be updated.
 
 # files hash-table stats:
- 
 # Load=6/1024=1%, Rehash=0, Collisions=0/15=0%
 # VPATH Search Paths
 
@@ -314,6 +314,6 @@ GNUmakefile:
 # strcache performance: lookups = 24 / hit rate = 12%
 # hash-table stats:
 # Load=21/8192=0%, Rehash=0, Collisions=1/24=4%
-# Finished Make data base on Tue May 17 19:34:27 2022
+# Finished Make data base on Tue May 17 23:16:22 2022
 
  

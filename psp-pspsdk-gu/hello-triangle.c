@@ -96,11 +96,14 @@ int main(int argc, char* argv[]){
         sceGumMatrixMode(GU_MODEL);
         sceGumLoadIdentity();
 
+        // THIS IS NEEDED TO INTERPOLATE COLORS
+        sceGuShadeModel(GU_SMOOTH);
+
         // Red?
         sceGuColor(0xff000000);
 
         // Allocate memory for the triangle vertices
-        struct VertexColor* vertices = (struct VertexColor*) sceGuGetMemory(3 * sizeof(struct VertexColor));
+        struct VertexColor* vertices = (struct VertexColor*) sceGuGetMemory(6 * sizeof(struct VertexColor));
         // Generate the triangle
         vertices[0].x = SCR_WIDTH / 2;
 		vertices[0].y = 20;
