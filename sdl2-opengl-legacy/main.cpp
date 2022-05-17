@@ -65,8 +65,8 @@ int main(int argc, char* argv[]){
 
     GLfloat vertices[] = {
         0.f, .8f, 0.f,
-        -.5f, -.5f, 0.f,
-        .5f, -.5f, 0.f
+        -.6f, -.6f, 0.f,
+        .6f, -.6f, 0.f
     };
 
     GLfloat colors[] = {
@@ -83,6 +83,12 @@ int main(int argc, char* argv[]){
 
         glClear(GL_COLOR_BUFFER_BIT);
         // draw_triangle();
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+
         glEnableClientState(GL_VERTEX_ARRAY);
         glEnableClientState(GL_COLOR_ARRAY);
 
