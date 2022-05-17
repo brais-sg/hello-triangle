@@ -36,8 +36,12 @@ struct Vertex {
  	float x,y,z;
 };
 
-static unsigned int __attribute__((aligned(16))) list[262144];
+struct VertexColor {
+    uint8_t r,g,b,a;
+    float  x,y,z;
+};
 
+static unsigned int __attribute__((aligned(16))) list[262144];
 
 int main(int argc, char* argv[]){
     setupCallbacks();
@@ -75,8 +79,6 @@ int main(int argc, char* argv[]){
 	sceGuDisplay(GU_TRUE);
 
 
-
-
     while(running()){
         sceGuStart(GU_DIRECT, list);
 
@@ -96,22 +98,39 @@ int main(int argc, char* argv[]){
         sceGumLoadIdentity();
 
         // Red?
-        sceGuColor(0xff0000ff);
+        // sceGuColor(0xff0000ff);
 
         // Allocate memory for the triangle vertices
-        struct Vertex* vertices = (struct Vertex*) sceGuGetMemory(3 * sizeof(struct Vertex));
+        struct VertexColor* vertices = (struct VertexColor*) sceGuGetMemory(3 * sizeof(struct VertexColor));
         // Generate the triangle
         vertices[0].x = SCR_WIDTH / 2;
 		vertices[0].y = 20;
 		vertices[0].z = 0;
+
+        vertices[0].r = 255;
+        vertices[0].g = 0;
+        vertices[0].b = 0;
+        vertices[0].a = 255;
+
 		vertices[1].x = (SCR_WIDTH / 6);
 		vertices[1].y = (SCR_HEIGHT / 2) + 80;
 		vertices[1].z = 0;
+
+        vertices[1].r = 0;
+        vertices[1].g = 255;
+        vertices[1].b = 0;
+        vertices[1].a = 255;
+
 		vertices[2].x = SCR_WIDTH - (SCR_WIDTH / 6);
 		vertices[2].y = (SCR_HEIGHT / 2) + 80;
 		vertices[2].z = 0;
 
-        sceGuDrawArray(GU_TRIANGLES, GU_VERTEX_32BITF | GU_TRANSFORM_2D, 3, 0, vertices);
+        vertices[2].r = 0;
+        vertices[2].g = 0;
+        vertices[2].b = 255;
+        vertices[2].a = 255;
+
+        sceGuDrawArray(GU_TRIANGLES, GU_VERTEX_32BITF | GU_COLOR_8888 | GU_TRANSFORM_2D, 3, 0, vertices);
 
 
         sceGuFinish();
