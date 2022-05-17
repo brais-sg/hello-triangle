@@ -37,7 +37,7 @@ struct Vertex {
 };
 
 struct VertexColor {
-    uint8_t r,g,b,a;
+    uint32_t color;
     float  x,y,z;
 };
 
@@ -107,28 +107,19 @@ int main(int argc, char* argv[]){
 		vertices[0].y = 20;
 		vertices[0].z = 0;
 
-        vertices[0].r = 255;
-        vertices[0].g = 0;
-        vertices[0].b = 0;
-        vertices[0].a = 255;
+        vertices[0].color = 0xffff0000;
 
 		vertices[1].x = (SCR_WIDTH / 6);
 		vertices[1].y = (SCR_HEIGHT / 2) + 80;
 		vertices[1].z = 0;
 
-        vertices[1].r = 0;
-        vertices[1].g = 255;
-        vertices[1].b = 0;
-        vertices[1].a = 255;
+        vertices[1].color = 0xff00ff00;
 
 		vertices[2].x = SCR_WIDTH - (SCR_WIDTH / 6);
 		vertices[2].y = (SCR_HEIGHT / 2) + 80;
 		vertices[2].z = 0;
 
-        vertices[2].r = 0;
-        vertices[2].g = 0;
-        vertices[2].b = 255;
-        vertices[2].a = 255;
+        vertices[2].color = 0xff0000ff;
 
         sceGuDrawArray(GU_TRIANGLES, GU_VERTEX_32BITF | GU_COLOR_8888 | GU_TRANSFORM_2D, 3, 0, vertices);
 
