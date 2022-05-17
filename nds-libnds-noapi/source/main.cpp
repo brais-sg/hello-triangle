@@ -193,7 +193,7 @@ int main() {
 	addEntry(CMD_SWPBUFFERS);
 	addEntry(0);
 
-
+	// Needed for DMA
 	DC_FlushRange(drawList, drawListElements);
 
 	// Disable texturing, shading, fog...
