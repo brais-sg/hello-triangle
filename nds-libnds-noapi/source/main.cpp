@@ -16,7 +16,7 @@ typedef volatile uint8_t  vu8_t;
 typedef volatile uint16_t vu16_t;
 typedef volatile uint32_t vu32_t;
 
-typedef uint16_t vfixed16_t;
+typedef int16_t vfixed16_t;
 
 typedef uint32_t drawlist_entry_t;
 
@@ -70,7 +70,7 @@ typedef uint32_t drawlist_entry_t;
 #define CMD_MTXMODE_PROJECTION 0
 #define CMD_MTXMODE_POSITION   1
 
-
+/*
 drawlist_entry_t drawlist[] = {
 	// glMatrixMode(GL_PROJECTION);
 	// glLoadIdentity();
@@ -123,19 +123,52 @@ drawlist_entry_t drawlist[] = {
 	// CMD_ENDVTX,
 	CMD_SWPBUFFERS,
 	0
-};
+};*/
 
 
-void cpuSendDrawlist(drawlist_entry_t* drawlist, uint32_t size){
-	for(uint32_t i = 0; i < size; i++){
-		GXFIFO = drawlist[i];
+drawlist_entry_t drawList[1024];
+uint32_t drawListElements = 0;
+
+void addEntry(drawlist_entry_t entry){
+	drawlist_entry_t* current = (drawlist_entry_t*) drawList + drawListElements;
+
+	if(drawListElements < 1024){
+		*current = entry;
+		drawListElements++;
 	}
 }
+
+void addVertexEntry(int32_t entry){
+	int32_t* current = (int32_t*) drawList + drawListElements;
+
+	if(drawListElements < 1024){
+		*current = entry;
+		drawListElements++;
+	}
+}
+
+void cpuSendDrawlist(){
+	for(uint32_t i = 0; i < drawListElements; i++){
+		GXFIFO = drawList[i];
+	}
+}
+
+void dmaSendDrawlist(){
+	// Lets GO DMA!
+
+}
+
+void clearDrawlist(){
+	drawListElements = 0;
+}
+
 
 int main() {	
 	videoSetMode(MODE_0_3D);
 
 	powerOn(POWER_3D_CORE | POWER_MATRIX);
+
+
 
 	// TODO: Clear matrix stack
 	// TODO: This, without API
@@ -150,10 +183,61 @@ int main() {
 	// GFX_TEX_FORMAT = 0;
 	// GFX_POLY_FORMAT = 0;
 
+	// Generate drawList
+	clearDrawlist();
+
+	// Reset projection matrix
+	addEntry(CMD_MTXMODE);
+	addEntry(CMD_MTXMODE_PROJECTION);
+	addEntry(CMD_MTXIDENTITY);
+
+	// Reset modelview matrix
+	addEntry(CMD_MTXMODE);
+	addEntry(CMD_MTXMODE_POSITION);
+	addEntry(CMD_MTXIDENTITY);
+
+	addEntry(CMD_VIEWPORT);
+	addEntry((uint32_t) CMD_VIEWPORT_ARGS(0, 0, 255, 191));
+
+	// Draw the triangle
+	addEntry(CMD_BEGINVTX);
+	addEntry(0);
+
+	// Enable back surface drawing, front surface drawing (No culling), and solid alpha
+	addEntry(CMD_POLYATTR);
+	addEntry(_BV(6) | _BV(7) | (31 << 16));
+
+	// First vertex
+	addEntry(CMD_VTXCOLOR);
+	addEntry(31); // Red
+
+	addEntry(CMD_VTX16);
+	addVertexEntry(VTX16_XYARGS(FLOAT2VFIXED16(0.f),FLOAT2VFIXED16(.8f)));
+	addVertexEntry(VTX16_ZARGS(FLOAT2VFIXED16(0.f)));
+
+	// Second vertex
+	addEntry(CMD_VTXCOLOR);
+	addEntry(31 << 5); // Green
+
+	addEntry(CMD_VTX16);
+	addVertexEntry(VTX16_XYARGS(FLOAT2VFIXED16(-.8f),FLOAT2VFIXED16(-.8f)));
+	addVertexEntry(VTX16_ZARGS(FLOAT2VFIXED16(0.f)));
+
+	// Third vertex
+	addEntry(CMD_VTXCOLOR);
+	addEntry(31 << 10); // Blue
+
+	addEntry(CMD_VTX16);
+	addVertexEntry(VTX16_XYARGS(FLOAT2VFIXED16(.8f),FLOAT2VFIXED16(-.8f)));
+	addVertexEntry(VTX16_ZARGS(FLOAT2VFIXED16(0.f)));
+
+	// End the drawlist
+	// addEntry(CMD_ENDVTX);
+	addEntry(CMD_SWPBUFFERS);
+	addEntry(0);
 
 	// Disable texturing, shading, fog...
 	DISP3DCNT = 0;
-
 
 	while(1) {
 		scanKeys();
@@ -161,7 +245,7 @@ int main() {
 		u16 keys = keysDown();
 		if(keys & KEY_START) break;
 
-		cpuSendDrawlist(drawlist, sizeof(drawlist) / sizeof(uint32_t));
+		cpuSendDrawlist();
 
 		swiWaitForVBlank();
 	}
