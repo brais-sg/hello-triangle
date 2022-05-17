@@ -23,7 +23,6 @@
 SDL_Window* window;
 SDL_GLContext gContext;
 
-
 #define WINDOW_WIDTH  800
 #define WINDOW_HEIGHT 600
 
@@ -104,8 +103,8 @@ int main(int argc, char* argv[]){
 
     GLfloat vertices[] = {
         0.f, .8f, 0.f,
-        -.5f, -.5f, 0.f,
-        .5f, -.5f, 0.f
+        -.6f, -.6f, 0.f,
+        .6f, -.6f, 0.f
     };
 
     GLfloat colors[] = {
