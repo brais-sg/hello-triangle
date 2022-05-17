@@ -193,6 +193,7 @@ int main() {
 	addEntry(CMD_SWPBUFFERS);
 	addEntry(0);
 
+
 	DC_FlushRange(drawList, drawListElements);
 
 	// Disable texturing, shading, fog...
