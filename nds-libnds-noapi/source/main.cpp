@@ -189,7 +189,7 @@ int main() {
 	addVertexEntry(VTX16_ZARGS(FLOAT2VFIXED16(0.f)));
 
 	// End the drawlist
-	// addEntry(CMD_ENDVTX);
+	addEntry(CMD_ENDVTX);
 	addEntry(CMD_SWPBUFFERS);
 	addEntry(0);
 
