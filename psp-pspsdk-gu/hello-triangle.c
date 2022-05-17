@@ -80,7 +80,7 @@ int main(int argc, char* argv[]){
 
     while(running()){
         sceGuStart(GU_DIRECT, list);
-
+        
         // Clear color and depth buffers
         sceGuClearColor(0);
         sceGuClearDepth(0);
