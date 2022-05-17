@@ -38,6 +38,14 @@ typedef uint32_t drawlist_entry_t;
 
 #define CLIPMTX_R   ((vu32_t*)  0x4000640)
 
+// DMA definitions (http://problemkaputt.de/gbatek.htm#dsdmatransfers)
+#define DMACH0SRC *((vu32_t*) 0x40000B0)
+#define DMACH0DST *((vu32_t*) 0x40000B4)
+#define DMACH0CR  *((vu32_t*) 0x40000B8)
+
+#define DMA_TRIGGER_GCFIFO   (7 << 27)
+
+
 // Geometry Engine commands
 #define CMD_UNPACKED(x) (((x) & 0xff))
 #define CMD_ARG(x)      ((x & 0xffffffff))
@@ -70,61 +78,6 @@ typedef uint32_t drawlist_entry_t;
 #define CMD_MTXMODE_PROJECTION 0
 #define CMD_MTXMODE_POSITION   1
 
-/*
-drawlist_entry_t drawlist[] = {
-	// glMatrixMode(GL_PROJECTION);
-	// glLoadIdentity();
-	CMD_MTXMODE,
-	CMD_MTXMODE_PROJECTION,
-	CMD_MTXIDENTITY,
-
-	// glMatrixMode(GL_MODELVIEW);
-	// glLoadIdentity();
-	CMD_MTXMODE,
-	CMD_MTXMODE_POSITION,
-	CMD_MTXIDENTITY,
-
-	// Set viewport to fullscreen
-	CMD_VIEWPORT,
-	(uint32_t) CMD_VIEWPORT_ARGS(0, 0, 255, 191),
-
-	// Draw the triangle
-	CMD_BEGINVTX,
-	0, // Triangles
-
-	CMD_POLYATTR,
-	(_BV(6) | _BV(7) | (31 << 16)), // Enable back surface drawing, front surface drawing (No culling), and solid alpha
-
-	// First vertex (Normalized Device Coordinates?)
-	CMD_VTXCOLOR,
-	31,
-
-	CMD_VTX16,
-	VTX16_XYARGS(FLOAT2VFIXED16(0.f),FLOAT2VFIXED16(.8f)),
-	VTX16_ZARGS(FLOAT2VFIXED16(0.f)),
-
-	// Second vertex
-	CMD_VTXCOLOR,
-	(31 << 5),
-
-	CMD_VTX16,
-	VTX16_XYARGS(FLOAT2VFIXED16(-.8f),FLOAT2VFIXED16(-.8f)),
-	VTX16_ZARGS(FLOAT2VFIXED16(0.f)),
-
-	// Third vertex
-	CMD_VTXCOLOR,
-	(31 << 10),
-
-	CMD_VTX16,
-	VTX16_XYARGS(FLOAT2VFIXED16(.8f),FLOAT2VFIXED16(-.8f)),
-	VTX16_ZARGS(FLOAT2VFIXED16(0.f)),
-
-
-	// CMD_ENDVTX,
-	CMD_SWPBUFFERS,
-	0
-};*/
-
 
 drawlist_entry_t drawList[1024];
 uint32_t drawListElements = 0;
@@ -155,7 +108,11 @@ void cpuSendDrawlist(){
 
 void dmaSendDrawlist(){
 	// Lets GO DMA!
+	while(DMACH0CR & DMA_BUSY);
 
+	DMACH0SRC = (uint32_t) drawList;
+	DMACH0DST = GXFIFO_ADDR;
+	DMACH0CR  = DMA_ENABLE | DMA_32_BIT | DMA_DST_FIX | DMA_TRIGGER_GCFIFO | drawListElements;
 }
 
 void clearDrawlist(){
@@ -236,6 +193,8 @@ int main() {
 	addEntry(CMD_SWPBUFFERS);
 	addEntry(0);
 
+	DC_FlushRange(drawList, drawListElements);
+
 	// Disable texturing, shading, fog...
 	DISP3DCNT = 0;
 
@@ -245,7 +204,8 @@ int main() {
 		u16 keys = keysDown();
 		if(keys & KEY_START) break;
 
-		cpuSendDrawlist();
+		// cpuSendDrawlist();
+		dmaSendDrawlist();
 
 		swiWaitForVBlank();
 	}
