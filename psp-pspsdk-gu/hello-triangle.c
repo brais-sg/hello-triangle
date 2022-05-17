@@ -32,6 +32,10 @@ PSP_MAIN_THREAD_ATTR(THREAD_ATTR_USER);
 #define SCR_WIDTH  (480)
 #define SCR_HEIGHT (272)
 
+struct Vertex {
+ 	float x,y,z;
+};
+
 static unsigned int __attribute__((aligned(16))) list[262144];
 
 
