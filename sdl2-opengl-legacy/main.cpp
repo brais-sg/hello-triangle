@@ -75,6 +75,8 @@ int main(int argc, char* argv[]){
         0.f, 0.f, 1.f, 1.f  // BLUE
     };
 
+    // GL_SMOOTH should be the default mode, but lets enable it explicitly
+    glShadeModel(GL_SMOOTH);
 
     while(running){
         while(SDL_PollEvent(&e)){
