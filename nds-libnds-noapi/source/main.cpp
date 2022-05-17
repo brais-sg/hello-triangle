@@ -189,7 +189,7 @@ int main() {
 	addVertexEntry(VTX16_ZARGS(FLOAT2VFIXED16(0.f)));
 
 	// End the drawlist
-	addEntry(CMD_ENDVTX);
+	// addEntry(CMD_ENDVTX);
 	addEntry(CMD_SWPBUFFERS);
 	addEntry(0);
 
@@ -205,8 +205,8 @@ int main() {
 		u16 keys = keysDown();
 		if(keys & KEY_START) break;
 
-		// cpuSendDrawlist();
-		dmaSendDrawlist();
+		cpuSendDrawlist();
+		// dmaSendDrawlist();
 
 		swiWaitForVBlank();
 	}
