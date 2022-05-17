@@ -27,6 +27,23 @@
             "cppStandard": "c++17",
             "intelliSenseMode": "linux-gcc-arm",
             "configurationProvider": "ms-vscode.makefile-tools"
+        },
+        {
+            "name": "Wii U (WUT)",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/opt/devkitpro/portlibs/wii/include/**",
+                "/opt/devkitpro/portlibs/wiiu/include/**",
+                "/opt/devkitpro/portlibs/ppc/include/",
+                "/opt/devkitpro/portlibs/ppc/include/**",
+                "/opt/devkitpro/wut/include/",
+                "/opt/devkitpro/wut/include/**"
+            ],
+            "defines": [],
+            "compilerPath": "/opt/devkitpro/devkitPPC/bin/powerpc-eabi-gcc",
+            "cStandard": "c11",
+            "cppStandard": "c++14",
+            "intelliSenseMode": "linux-gcc-arm"
         }
     ],
     "version": 4
