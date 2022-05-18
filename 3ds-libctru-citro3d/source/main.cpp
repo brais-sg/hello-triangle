@@ -60,7 +60,7 @@ int main(){
     // Identity matrix for transform
     // Orthogonal for now
     static C3D_Mtx transform;
-    Mtx_OrthoTilt(&transform, 0.0, 400.0, 0.0, 240.0, 0.0, 1.0, true);
+    Mtx_OrthoTilt(&transform, 0.0, 400.0, 0.0, 240.0, -1.0, 1.0, true);
 
 
     static void* vbo_data_pos = linearAlloc(sizeof(vertex_list));
