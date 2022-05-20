@@ -194,7 +194,7 @@ int main() {
 	addEntry(0);
 
 	// Needed for DMA
-	DC_FlushRange(drawList, drawListElements * 4);
+	DC_FlushRange(drawList, drawListElements * sizeof(uint32_t));
 
 	// Disable texturing, shading, fog...
 	DISP3DCNT = 0;
@@ -205,8 +205,8 @@ int main() {
 		u16 keys = keysDown();
 		if(keys & KEY_START) break;
 
-		cpuSendDrawlist();
-		// dmaSendDrawlist();
+		// cpuSendDrawlist();
+		dmaSendDrawlist();
 
 		swiWaitForVBlank();
 	}

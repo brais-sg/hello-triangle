@@ -1,4 +1,6 @@
 make all --print-data-base --no-builtin-variables --no-builtin-rules --question
+make: *** No rule to make target 'all'.  Stop.
+
 # GNU Make 4.2.1
 # Built for x86_64-pc-linux-gnu
 # Copyright (C) 1988-2016 Free Software Foundation, Inc.
@@ -6,7 +8,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Tue May 17 23:16:22 2022
+# Make data base, printed on Fri May 20 15:26:57 2022
 
 # Variables
 
@@ -26,6 +28,8 @@ XDG_SESSION_TYPE = x11
 VSCODE_LOG_NATIVE = false
 # automatic
 ?D = $(patsubst %/,%,$(dir $?))
+# environment
+SESSION_MANAGER = local/Comet:@/tmp/.ICE-unix/1249,unix/Comet:/tmp/.ICE-unix/1249
 # automatic
 @D = $(patsubst %/,%,$(dir $@))
 # environment
@@ -41,13 +45,11 @@ SHELL = /bin/sh
 # environment
 GDM_LANG = es_ES
 # environment
-VSCODE_NLS_CONFIG = {"locale":"es","availableLanguages":{"*":"es"},"_languagePackId":"125a9a608456aa5e8a25d0a18c7b1d68.es","_translationsConfigFile":"/home/brais/.config/Code/clp/125a9a608456aa5e8a25d0a18c7b1d68.es/tcf.json","_cacheRoot":"/home/brais/.config/Code/clp/125a9a608456aa5e8a25d0a18c7b1d68.es","_resolvedLanguagePackCoreLocation":"/home/brais/.config/Code/clp/125a9a608456aa5e8a25d0a18c7b1d68.es/da15b6fd3ef856477bf6f4fb29ba1b7af717770d","_corruptedFile":"/home/brais/.config/Code/clp/125a9a608456aa5e8a25d0a18c7b1d68.es/corrupted.info","_languagePackSupport":true}
+VSCODE_NLS_CONFIG = {"locale":"es","availableLanguages":{"*":"es"},"_languagePackId":"125a9a608456aa5e8a25d0a18c7b1d68.es","_translationsConfigFile":"/home/brais/.config/Code/clp/125a9a608456aa5e8a25d0a18c7b1d68.es/tcf.json","_cacheRoot":"/home/brais/.config/Code/clp/125a9a608456aa5e8a25d0a18c7b1d68.es","_resolvedLanguagePackCoreLocation":"/home/brais/.config/Code/clp/125a9a608456aa5e8a25d0a18c7b1d68.es/c3511e6c69bb39013c4a4b7b9566ec1ca73fc4d5","_corruptedFile":"/home/brais/.config/Code/clp/125a9a608456aa5e8a25d0a18c7b1d68.es/corrupted.info","_languagePackSupport":true}
 # environment
-_ = /usr/bin/make
+_ = /usr/share/code/code
 # environment
 XDG_CONFIG_DIRS = /etc/xdg/xdg-xubuntu:/etc/xdg:/etc/xdg
-# environment
-LESSOPEN = | /usr/bin/lesspipe %s
 # environment
 GTK_OVERLAY_SCROLLING = 0
 # makefile
@@ -59,7 +61,7 @@ GNUMAKEFLAGS :=
 # environment
 MANDATORY_PATH = /usr/share/gconf/xubuntu.mandatory.path
 # environment
-XDG_DATA_DIRS = /usr/share/xfce4:/usr/share/xubuntu:/home/brais/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:/usr/local/share:/usr/share:/var/lib/snapd/desktop:/usr/share
+XDG_DATA_DIRS = /usr/share/xubuntu:/usr/share/xfce4:/home/brais/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:/usr/local/share:/usr/share:/var/lib/snapd/desktop:/usr/share
 # environment
 DBUS_SESSION_BUS_ADDRESS = unix:path=/run/user/1000/bus
 # environment
@@ -67,9 +69,7 @@ VSCODE_VERBOSE_LOGGING = true
 # environment
 VITASDK = /usr/local/vitasdk
 # environment
-DEVKITA64 = /opt/devkitpro//devkitA64
-# environment
-VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-28da1e18-a0f3-44f0-9cca-f260d2b0efa8.sock
+LESSOPEN = | /usr/bin/lesspipe %s
 # environment
 VSCODE_CWD = /home/brais
 # environment
@@ -77,13 +77,13 @@ XDG_SESSION_PATH = /org/freedesktop/DisplayManager/Session0
 # default
 MAKE_HOST := x86_64-pc-linux-gnu
 # environment
-PATH = /home/brais/.cargo/bin:/home/brais/.local/bin:/usr/local/vitasdk/bin:/home/brais/Android/Sdk/platform-tools/:/home/brais/Android/Sdk/tools/:/home/brais/Android/Sdk/ndk/22.1.7171670/:/opt/devkitpro/tools/bin:/home/brais/.cargo/bin:/home/brais/.local/bin:/opt/devkitpro/tools/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/usr/lib/jvm/java-8-oracle/bin:/usr/lib/jvm/java-8-oracle/db/bin:/usr/lib/jvm/java-8-oracle/jre/bin:/usr/lib/jvm/java-8-oracle/bin:/usr/lib/jvm/java-8-oracle/db/bin:/usr/lib/jvm/java-8-oracle/jre/bin:/opt/devkitpro/devkitARM/bin/:/home/brais/pspdev/bin/:/usr/local/pspdev/bin:/usr/local/ps2dev/bin:/usr/local/ps2dev/ee/bin:/usr/local/ps2dev/iop/bin:/usr/local/ps2dev/dvp/bin:/usr/local/ps2dev/ps2sdk/bin:/usr/local/ps3dev/bin:/usr/local/ps3dev/ppu/bin:/usr/local/ps3dev/spu/bin
+PATH = /usr/local/vitasdk/bin:/home/brais/Android/Sdk/platform-tools:/home/brais/Android/Sdk/tools:/home/brais/android-ndk-r21e:/opt/devkitpro/tools/bin:/opt/devkitpro/tools/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/usr/local/pspdev/bin:/usr/local/pspdev/bin:/usr/local/pspdev/bin:/usr/local/ps2dev/bin:/usr/local/ps2dev/ee/bin:/usr/local/ps2dev/iop/bin:/usr/local/ps2dev/dvp/bin:/usr/local/ps2dev/ps2sdk/bin:/usr/local/ps3dev/bin:/usr/local/ps3dev/ppu/bin:/usr/local/ps3dev/spu/bin
 # environment
 PS2DEV = /usr/local/ps2dev
 # environment
 GPG_AGENT_INFO = /run/user/1000/gnupg/S.gpg-agent:0:1
 # environment
-SESSION_MANAGER = local/Black:@/tmp/.ICE-unix/1175,unix/Black:/tmp/.ICE-unix/1175
+GSKIT = /usr/local/ps2dev/gsKit
 # environment
 XDG_RUNTIME_DIR = /run/user/1000
 # default
@@ -95,7 +95,7 @@ VSCODE_LOG_STACK = false
 # environment
 ELECTRON_RUN_AS_NODE = 1
 # environment
-ANDROID_HOME = /home/brais/Android/Sdk/
+ANDROID_HOME = /home/brais/Android/Sdk
 # default
 .FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell archives jobserver output-sync check-symlink load
 # environment
@@ -121,7 +121,7 @@ QT_QPA_PLATFORMTHEME = gtk2
 # environment
 XDG_SEAT = seat0
 # environment
-SSH_AGENT_PID = 1260
+SSH_AGENT_PID = 1336
 # environment
 ORIGINAL_XDG_CURRENT_DESKTOP = XFCE
 # environment
@@ -133,17 +133,11 @@ PSPDEV = /usr/local/pspdev
 # environment
 LESSCLOSE = /usr/bin/lesspipe %s %s
 # environment
-J2REDIR = /usr/lib/jvm/java-8-oracle/jre
-# environment
-VSCODE_CODE_CACHE_PATH = /home/brais/.config/Code/CachedData/da15b6fd3ef856477bf6f4fb29ba1b7af717770d
+VSCODE_CODE_CACHE_PATH = /home/brais/.config/Code/CachedData/c3511e6c69bb39013c4a4b7b9566ec1ca73fc4d5
 # environment
 LOGNAME = brais
 # environment
 APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = 1
-# environment
-NVM_CD_FLAGS = 
-# environment
-J2SDKDIR = /usr/lib/jvm/java-8-oracle
 # environment
 VSCODE_HANDLES_UNCAUGHT_ERRORS = true
 # automatic
@@ -153,7 +147,7 @@ XDG_VTNR = 7
 # environment
 CLUTTER_BACKEND = x11
 # environment
-DEVKITPRO = /opt/devkitpro/
+DEVKITPRO = /opt/devkitpro
 # environment
 MAKELEVEL := 0
 # default
@@ -161,15 +155,15 @@ MAKE = $(MAKE_COMMAND)
 # default
 MAKECMDGOALS := all
 # environment
-ANDROID_NDK_HOME = /home/brais/Android/Sdk/ndk/22.1.7171670/
+ANDROID_NDK_HOME = /home/brais/android-ndk-r21e
 # environment
-DEVKITARM = /opt/devkitpro//devkitARM
+DEVKITARM = /opt/devkitpro/devkitARM
 # environment
 SHLVL = 0
 # environment
 PS3DEV = /usr/local/ps3dev
 # environment
-JAVA_HOME = /usr/lib/jvm/java-8-oracle
+VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-e2e4737e-9f78-49f7-87a2-d18f92191358.sock
 # environment
 XDG_SESSION_ID = c2
 # environment
@@ -191,7 +185,7 @@ LANGUAGE = es_ES
 # environment
 XDG_SEAT_PATH = /org/freedesktop/DisplayManager/Seat0
 # environment
-VSCODE_IPC_HOOK = /run/user/1000/vscode-11ede2c2-1.67.1-main.sock
+VSCODE_IPC_HOOK = /run/user/1000/vscode-11ede2c2-1.67.2-main.sock
 # environment
 PANEL_GDK_CORE_DEVICE_EVENTS = 0
 # environment
@@ -202,8 +196,6 @@ MAKEFLAGS = pqrR
 MFLAGS = -pqrR
 # automatic
 *D = $(patsubst %/,%,$(dir $*))
-# environment
-NVM_DIR = /home/brais/.nvm
 # automatic
 +D = $(patsubst %/,%,$(dir $+))
 # environment
@@ -219,8 +211,6 @@ MAKEFILES :=
 # automatic
 <F = $(notdir $<)
 # environment
-GSKIT = /usr/local/ps2dev/gsKit
-# environment
 LC_ALL = C
 # environment
 PSL1GHT = /usr/local/ps3dev
@@ -231,9 +221,7 @@ SUFFIXES :=
 # environment
 CHROME_DESKTOP = code-url-handler.desktop
 # environment
-DEVKITPPC = /opt/devkitpro//devkitPPC
-# environment
-DERBY_HOME = /usr/lib/jvm/java-8-oracle/db
+DEVKITPPC = /opt/devkitpro/devkitPPC
 # default
 .RECIPEPREFIX := 
 # environment
@@ -241,11 +229,9 @@ PICO_SDK_PATH = /home/brais/pico-sdk/
 # environment
 LANG = C
 # environment
-VSCODE_PID = 771407
-# environment
-NVM_RC_VERSION = 
+VSCODE_PID = 1737
 # variable set hash-table stats:
-# Load=117/1024=11%, Rehash=0, Collisions=14/139=10%
+# Load=109/1024=11%, Rehash=0, Collisions=14/131=11%
 
 # Pattern-specific Variable Values
 
@@ -253,9 +239,9 @@ NVM_RC_VERSION =
 
 # Directories
 
-# . (device 2049, inode 9052514): 13 files, no impossibilities.
+# . (device 66309, inode 7998697): 16 files, no impossibilities.
 
-# 13 files, no impossibilities in 1 directories.
+# 16 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -276,9 +262,6 @@ Makefile:
 #  File does not exist.
 #  File has been updated.
 #  Failed to be updated.
- 
-make: *** No rule to make target 'all'.  Stop.
-
 
 # Not a target:
 makefile:
@@ -296,6 +279,7 @@ makefile:
 # Not a target:
 GNUmakefile:
 #  Implicit rule search has been done.
+ 
 #  File does not exist.
 #  File has been updated.
 #  Failed to be updated.
@@ -308,12 +292,12 @@ GNUmakefile:
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 21 / storage = 219 B / avg = 10 B
-# current buf: size = 8162 B / used = 219 B / count = 21 / avg = 10 B
+# strcache buffers: 1 (0) / strings = 24 / storage = 268 B / avg = 11 B
+# current buf: size = 8162 B / used = 268 B / count = 24 / avg = 11 B
 
-# strcache performance: lookups = 24 / hit rate = 12%
+# strcache performance: lookups = 27 / hit rate = 11%
 # hash-table stats:
-# Load=21/8192=0%, Rehash=0, Collisions=1/24=4%
-# Finished Make data base on Tue May 17 23:16:22 2022
+# Load=24/8192=0%, Rehash=0, Collisions=1/27=4%
+# Finished Make data base on Fri May 20 15:26:57 2022
 
  
