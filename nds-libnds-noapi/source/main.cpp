@@ -205,9 +205,12 @@ int main() {
 		u16 keys = keysDown();
 		if(keys & KEY_START) break;
 
-		// cpuSendDrawlist();
+		#ifdef USE_DMA
 		dmaSendDrawlist();
-
+		#else
+		cpuSendDrawlist();
+		#endif
+		
 		swiWaitForVBlank();
 	}
 
