@@ -199,6 +199,9 @@ int main() {
 	// Disable texturing, shading, fog...
 	DISP3DCNT = 0;
 
+
+	#define USE_DMA 1
+
 	while(1) {
 		scanKeys();
 
