@@ -2,13 +2,14 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 make: *** No rule to make target 'all'.  Stop.
 
 # GNU Make 4.2.1
+ 
 # Built for x86_64-pc-linux-gnu
 # Copyright (C) 1988-2016 Free Software Foundation, Inc.
 # License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Sat May 21 13:02:42 2022
+# Make data base, printed on Sun May 22 19:39:32 2022
 
 # Variables
 
@@ -71,7 +72,7 @@ VITASDK = /usr/local/vitasdk
 # environment
 DEVKITA64 = /opt/devkitpro//devkitA64
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-378efd0f-8dea-4ec0-ab50-650cfff9680c.sock
+VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-7b72db65-3a27-4561-816b-d952dc7b5363.sock
 # environment
 VSCODE_CWD = /home/brais
 # environment
@@ -85,7 +86,7 @@ PS2DEV = /usr/local/ps2dev
 # environment
 GPG_AGENT_INFO = /run/user/1000/gnupg/S.gpg-agent:0:1
 # environment
-SESSION_MANAGER = local/Black:@/tmp/.ICE-unix/1114,unix/Black:/tmp/.ICE-unix/1114
+SESSION_MANAGER = local/Black:@/tmp/.ICE-unix/1129,unix/Black:/tmp/.ICE-unix/1129
 # environment
 XDG_RUNTIME_DIR = /run/user/1000
 # default
@@ -123,7 +124,7 @@ QT_QPA_PLATFORMTHEME = gtk2
 # environment
 XDG_SEAT = seat0
 # environment
-SSH_AGENT_PID = 1201
+SSH_AGENT_PID = 1214
 # environment
 ORIGINAL_XDG_CURRENT_DESKTOP = XFCE
 # environment
@@ -243,7 +244,7 @@ PICO_SDK_PATH = /home/brais/pico-sdk/
 # environment
 LANG = C
 # environment
-VSCODE_PID = 2981
+VSCODE_PID = 7641
 # environment
 NVM_RC_VERSION = 
 # variable set hash-table stats:
@@ -279,7 +280,9 @@ Makefile:
 #  File has been updated.
 #  Failed to be updated.
 
+ 
 # Not a target:
+ 
 makefile:
 #  Implicit rule search has been done.
 #  File does not exist.
@@ -313,6 +316,6 @@ GNUmakefile:
 # strcache performance: lookups = 27 / hit rate = 11%
 # hash-table stats:
 # Load=24/8192=0%, Rehash=0, Collisions=1/27=4%
-# Finished Make data base on Sat May 21 13:02:42 2022
+# Finished Make data base on Sun May 22 19:39:32 2022
 
  

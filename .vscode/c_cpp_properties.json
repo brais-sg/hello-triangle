@@ -78,6 +78,21 @@
             "cStandard": "c11",
             "cppStandard": "c++14",
             "intelliSenseMode": "linux-clang-x64"
+        },
+        {
+            "name": "PSVITA (VITASDK)",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/usr/local/vitasdk/include/",
+                "/usr/local/vitasdk/include/**",
+                "/usr/local/vitasdk/arm-vita-eabi/include/",
+                "/usr/local/vitasdk/arm-vita-eabi/include/**"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/local/vitasdk/bin/arm-vita-eabi-gcc",
+            "cStandard": "c11",
+            "cppStandard": "c++14",
+            "intelliSenseMode": "linux-clang-x64"
         }
     ],
     "version": 4
