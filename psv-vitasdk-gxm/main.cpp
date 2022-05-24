@@ -78,6 +78,13 @@ static unsigned int gxm_back_buffer_index;
 static SceUID gxm_depth_stencil_surface_uid;
 static void *gxm_depth_stencil_surface_addr;
 static SceGxmDepthStencilSurface gxm_depth_stencil_surface;
+static SceGxmShaderPatcher *gxm_shader_patcher;
+static SceUID gxm_shader_patcher_buffer_uid;
+static void *gxm_shader_patcher_buffer_addr;
+static SceUID gxm_shader_patcher_vertex_usse_uid;
+static void *gxm_shader_patcher_vertex_usse_addr;
+static SceUID gxm_shader_patcher_fragment_usse_uid;
+static void *gxm_shader_patcher_fragment_usse_addr;
 
 static void *gpu_alloc_map(SceKernelMemBlockType type, SceGxmMemoryAttribFlags gpu_attrib, size_t size, SceUID *uid);
 static void gpu_unmap_free(SceUID uid);
@@ -85,6 +92,9 @@ static void *gpu_vertex_usse_alloc_map(size_t size, SceUID *uid, unsigned int *u
 static void gpu_vertex_usse_unmap_free(SceUID uid);
 static void *gpu_fragment_usse_alloc_map(size_t size, SceUID *uid, unsigned int *usse_offset);
 static void gpu_fragment_usse_unmap_free(SceUID uid);
+
+static void *shader_patcher_host_alloc_cb(void *user_data, unsigned int size);
+static void shader_patcher_host_free_cb(void *user_data, void *mem);
 
 
 // Before doing nothing: Take a look at xerpi's gxmfun repository
@@ -159,6 +169,54 @@ int main(int argc, char* argv[]){
 	}
 
 
+    unsigned int depth_stencil_width = ALIGN(DISPLAY_WIDTH, SCE_GXM_TILE_SIZEX);
+	unsigned int depth_stencil_height = ALIGN(DISPLAY_HEIGHT, SCE_GXM_TILE_SIZEY);
+	unsigned int depth_stencil_samples = depth_stencil_width * depth_stencil_height;
+
+	gxm_depth_stencil_surface_addr = gpu_alloc_map(SCE_KERNEL_MEMBLOCK_TYPE_USER_CDRAM_RW, (SceGxmMemoryAttribFlags) (SCE_GXM_MEMORY_ATTRIB_READ | SCE_GXM_MEMORY_ATTRIB_WRITE), 4 * depth_stencil_samples, &gxm_depth_stencil_surface_uid);
+
+	sceGxmDepthStencilSurfaceInit(&gxm_depth_stencil_surface, SCE_GXM_DEPTH_STENCIL_FORMAT_S8D24, SCE_GXM_DEPTH_STENCIL_SURFACE_TILED, depth_stencil_width, gxm_depth_stencil_surface_addr, NULL);
+
+	static const unsigned int shader_patcher_buffer_size = 64 * 1024;
+	static const unsigned int shader_patcher_vertex_usse_size = 64 * 1024;
+	static const unsigned int shader_patcher_fragment_usse_size = 64 * 1024;
+
+    // WHAT? SCE_GXM_MEMORY_ATTRIB_READ?
+	gxm_shader_patcher_buffer_addr = gpu_alloc_map(SCE_KERNEL_MEMBLOCK_TYPE_USER_CDRAM_RW,(SceGxmMemoryAttribFlags) (SCE_GXM_MEMORY_ATTRIB_READ | SCE_GXM_MEMORY_ATTRIB_READ), shader_patcher_buffer_size, &gxm_shader_patcher_buffer_uid);
+
+	unsigned int shader_patcher_vertex_usse_offset;
+	gxm_shader_patcher_vertex_usse_addr = gpu_vertex_usse_alloc_map(
+		shader_patcher_vertex_usse_size, &gxm_shader_patcher_vertex_usse_uid,
+		&shader_patcher_vertex_usse_offset);
+
+	unsigned int shader_patcher_fragment_usse_offset;
+	gxm_shader_patcher_fragment_usse_addr = gpu_fragment_usse_alloc_map(
+		shader_patcher_fragment_usse_size, &gxm_shader_patcher_fragment_usse_uid,
+		&shader_patcher_fragment_usse_offset);
+
+	SceGxmShaderPatcherParams shader_patcher_params;
+	memset(&shader_patcher_params, 0, sizeof(shader_patcher_params));
+	shader_patcher_params.userData = NULL;
+	shader_patcher_params.hostAllocCallback = shader_patcher_host_alloc_cb;
+	shader_patcher_params.hostFreeCallback = shader_patcher_host_free_cb;
+	shader_patcher_params.bufferAllocCallback = NULL;
+	shader_patcher_params.bufferFreeCallback = NULL;
+	shader_patcher_params.bufferMem = gxm_shader_patcher_buffer_addr;
+	shader_patcher_params.bufferMemSize = shader_patcher_buffer_size;
+	shader_patcher_params.vertexUsseAllocCallback = NULL;
+	shader_patcher_params.vertexUsseFreeCallback = NULL;
+	shader_patcher_params.vertexUsseMem = gxm_shader_patcher_vertex_usse_addr;
+	shader_patcher_params.vertexUsseMemSize = shader_patcher_vertex_usse_size;
+	shader_patcher_params.vertexUsseOffset = shader_patcher_vertex_usse_offset;
+	shader_patcher_params.fragmentUsseAllocCallback = NULL;
+	shader_patcher_params.fragmentUsseFreeCallback = NULL;
+	shader_patcher_params.fragmentUsseMem = gxm_shader_patcher_fragment_usse_addr;
+	shader_patcher_params.fragmentUsseMemSize = shader_patcher_fragment_usse_size;
+	shader_patcher_params.fragmentUsseOffset = shader_patcher_fragment_usse_offset;
+
+	sceGxmShaderPatcherCreate(&shader_patcher_params, &gxm_shader_patcher);
+
+    
 
 
 
@@ -166,6 +224,7 @@ int main(int argc, char* argv[]){
 
 
 
+    sceGxmShaderPatcherDestroy(gxm_shader_patcher);
     sceGxmDestroyRenderTarget(gxm_render_target);
     
 
