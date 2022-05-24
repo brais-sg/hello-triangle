@@ -215,8 +215,10 @@ int main(int argc, char* argv[]){
 	shader_patcher_params.fragmentUsseOffset = shader_patcher_fragment_usse_offset;
 
 	sceGxmShaderPatcherCreate(&shader_patcher_params, &gxm_shader_patcher);
-
+    // https://github.com/xerpi/gxmfun/blob/c0e3b8259880286d8ca507123b4b9d635f33d7b4/source/main.c#L333
     
+
+
 
 
 
