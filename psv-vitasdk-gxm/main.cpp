@@ -21,6 +21,9 @@
 #include <psp2/gxm.h>
 #include <psp2/display.h>
 #include <psp2/ctrl.h>
+#include <psp2/kernel/sysmem.h>
+
+// #include "gpu_utils.h"
 
 #define DISPLAY_WIDTH 960
 #define DISPLAY_HEIGHT 544
@@ -30,11 +33,59 @@
 #define DISPLAY_PIXEL_FORMAT SCE_DISPLAY_PIXELFORMAT_A8B8G8R8
 #define MAX_PENDING_SWAPS (DISPLAY_BUFFER_COUNT - 1)
 
+#define ALIGN(x, a) (((x) + ((a) - 1)) & ~((a) - 1))
+#define abs(x) (((x) < 0) ? -(x) : (x))
+
 struct display_queue_callback_data {
 	void *addr;
 };
 
-static void display_queue_callback(const void *callbackData);
+// https://github.com/xerpi/gxmfun/blob/master/source/main.c
+// Take a look at how this exactly works
+static void display_queue_callback(const void *callbackData){
+    SceDisplayFrameBuf display_fb;
+    const struct display_queue_callback_data* cb_data = (const struct display_queue_callback_data*) callbackData;
+    
+    memset(&display_fb, 0, sizeof(display_fb));
+    display_fb.size  = sizeof(display_fb);
+    display_fb.base  = cb_data->addr;
+    display_fb.pitch = DISPLAY_STRIDE;
+    display_fb.pixelformat = DISPLAY_PIXEL_FORMAT;
+    display_fb.width = DISPLAY_WIDTH;
+    display_fb.height = DISPLAY_HEIGHT;
+
+    sceDisplaySetFrameBuf(&display_fb, SCE_DISPLAY_SETBUF_NEXTFRAME);
+    sceDisplayWaitVblankStart();
+}
+
+
+static SceGxmContext *gxm_context;
+static SceUID vdm_ring_buffer_uid;
+static void *vdm_ring_buffer_addr;
+static SceUID vertex_ring_buffer_uid;
+static void *vertex_ring_buffer_addr;
+static SceUID fragment_ring_buffer_uid;
+static void *fragment_ring_buffer_addr;
+static SceUID fragment_usse_ring_buffer_uid;
+static void *fragment_usse_ring_buffer_addr;
+static SceGxmRenderTarget *gxm_render_target;
+static SceGxmColorSurface gxm_color_surfaces[DISPLAY_BUFFER_COUNT];
+static SceUID gxm_color_surfaces_uid[DISPLAY_BUFFER_COUNT];
+static void *gxm_color_surfaces_addr[DISPLAY_BUFFER_COUNT];
+static SceGxmSyncObject *gxm_sync_objects[DISPLAY_BUFFER_COUNT];
+static unsigned int gxm_front_buffer_index;
+static unsigned int gxm_back_buffer_index;
+static SceUID gxm_depth_stencil_surface_uid;
+static void *gxm_depth_stencil_surface_addr;
+static SceGxmDepthStencilSurface gxm_depth_stencil_surface;
+
+static void *gpu_alloc_map(SceKernelMemBlockType type, SceGxmMemoryAttribFlags gpu_attrib, size_t size, SceUID *uid);
+static void gpu_unmap_free(SceUID uid);
+static void *gpu_vertex_usse_alloc_map(size_t size, SceUID *uid, unsigned int *usse_offset);
+static void gpu_vertex_usse_unmap_free(SceUID uid);
+static void *gpu_fragment_usse_alloc_map(size_t size, SceUID *uid, unsigned int *usse_offset);
+static void gpu_fragment_usse_unmap_free(SceUID uid);
+
 
 // Before doing nothing: Take a look at xerpi's gxmfun repository
 int main(int argc, char* argv[]){
@@ -50,11 +101,196 @@ int main(int argc, char* argv[]){
     sceGxmInitialize(&gxm_init_params);
 
     // Initialize GPU rings
+    vdm_ring_buffer_addr      = gpu_alloc_map(SCE_KERNEL_MEMBLOCK_TYPE_USER_CDRAM_RW, SCE_GXM_MEMORY_ATTRIB_READ, SCE_GXM_DEFAULT_VDM_RING_BUFFER_SIZE, &vdm_ring_buffer_uid);
+    vertex_ring_buffer_addr   = gpu_alloc_map(SCE_KERNEL_MEMBLOCK_TYPE_USER_CDRAM_RW, SCE_GXM_MEMORY_ATTRIB_READ, SCE_GXM_DEFAULT_VERTEX_RING_BUFFER_SIZE, &vertex_ring_buffer_uid);
+    fragment_ring_buffer_addr = gpu_alloc_map(SCE_KERNEL_MEMBLOCK_TYPE_USER_CDRAM_RW, SCE_GXM_MEMORY_ATTRIB_READ, SCE_GXM_DEFAULT_FRAGMENT_RING_BUFFER_SIZE, &fragment_ring_buffer_uid);
+
+    unsigned int fragment_usse_offset;
+    fragment_usse_ring_buffer_addr = gpu_fragment_usse_alloc_map(SCE_GXM_DEFAULT_FRAGMENT_USSE_RING_BUFFER_SIZE, &fragment_ring_buffer_uid, &fragment_usse_offset);
+
+    SceGxmContextParams gxm_context_params;
+
+    memset(&gxm_context_params, 0, sizeof(SceGxmContextParams));
+	gxm_context_params.hostMem = malloc(SCE_GXM_MINIMUM_CONTEXT_HOST_MEM_SIZE);
+	gxm_context_params.hostMemSize = SCE_GXM_MINIMUM_CONTEXT_HOST_MEM_SIZE;
+	gxm_context_params.vdmRingBufferMem = vdm_ring_buffer_addr;
+	gxm_context_params.vdmRingBufferMemSize = SCE_GXM_DEFAULT_VDM_RING_BUFFER_SIZE;
+	gxm_context_params.vertexRingBufferMem = vertex_ring_buffer_addr;
+	gxm_context_params.vertexRingBufferMemSize = SCE_GXM_DEFAULT_VERTEX_RING_BUFFER_SIZE;
+	gxm_context_params.fragmentRingBufferMem = fragment_ring_buffer_addr;
+	gxm_context_params.fragmentRingBufferMemSize = SCE_GXM_DEFAULT_FRAGMENT_RING_BUFFER_SIZE;
+	gxm_context_params.fragmentUsseRingBufferMem = fragment_usse_ring_buffer_addr;
+	gxm_context_params.fragmentUsseRingBufferMemSize = SCE_GXM_DEFAULT_FRAGMENT_USSE_RING_BUFFER_SIZE;
+	gxm_context_params.fragmentUsseRingBufferOffset = fragment_usse_offset;
+
+	sceGxmCreateContext(&gxm_context_params, &gxm_context);
+
+    SceGxmRenderTargetParams render_target_params;
+	memset(&render_target_params, 0, sizeof(render_target_params));
+	render_target_params.flags = 0;
+	render_target_params.width = DISPLAY_WIDTH;
+	render_target_params.height = DISPLAY_HEIGHT;
+	render_target_params.scenesPerFrame = 1;
+	render_target_params.multisampleMode = SCE_GXM_MULTISAMPLE_NONE;
+	render_target_params.multisampleLocations = 0;
+	render_target_params.driverMemBlock = -1;
+
+	sceGxmCreateRenderTarget(&render_target_params, &gxm_render_target);
+
+    for (int i = 0; i < DISPLAY_BUFFER_COUNT; i++) {
+		gxm_color_surfaces_addr[i] = gpu_alloc_map(SCE_KERNEL_MEMBLOCK_TYPE_USER_CDRAM_RW,
+			(SceGxmMemoryAttribFlags) (SCE_GXM_MEMORY_ATTRIB_READ | SCE_GXM_MEMORY_ATTRIB_WRITE),
+			ALIGN(4 * DISPLAY_STRIDE * DISPLAY_HEIGHT, 1 * 1024 * 1024),
+			&gxm_color_surfaces_uid[i]);
+
+		memset(gxm_color_surfaces_addr[i], 0, DISPLAY_STRIDE * DISPLAY_HEIGHT);
+
+		sceGxmColorSurfaceInit(&gxm_color_surfaces[i],
+			DISPLAY_COLOR_FORMAT,
+			SCE_GXM_COLOR_SURFACE_LINEAR,
+			SCE_GXM_COLOR_SURFACE_SCALE_NONE,
+			SCE_GXM_OUTPUT_REGISTER_SIZE_32BIT,
+			DISPLAY_WIDTH,
+			DISPLAY_HEIGHT,
+			DISPLAY_STRIDE,
+			gxm_color_surfaces_addr[i]);
+
+		sceGxmSyncObjectCreate(&gxm_sync_objects[i]);
+	}
+
+
+
+
+
+
+
+
+
+    sceGxmDestroyRenderTarget(gxm_render_target);
     
 
+    gpu_unmap_free(vdm_ring_buffer_uid);
+    gpu_unmap_free(vertex_ring_buffer_uid);
+    gpu_unmap_free(fragment_ring_buffer_uid);
 
-
+    sceGxmDestroyContext(gxm_context);
+    sceGxmTerminate();
 
     sceKernelExitProcess(0);
     return 0;
+}
+
+void *gpu_alloc_map(SceKernelMemBlockType type, SceGxmMemoryAttribFlags gpu_attrib, size_t size, SceUID *uid){
+	SceUID memuid;
+	void *addr;
+
+	if (type == SCE_KERNEL_MEMBLOCK_TYPE_USER_CDRAM_RW)
+		size = ALIGN(size, 256 * 1024);
+	else
+		size = ALIGN(size, 4 * 1024);
+
+	memuid = sceKernelAllocMemBlock("gpumem", type, size, NULL);
+	if (memuid < 0)
+		return NULL;
+
+	if (sceKernelGetMemBlockBase(memuid, &addr) < 0)
+		return NULL;
+
+	if (sceGxmMapMemory(addr, size, gpu_attrib) < 0) {
+		sceKernelFreeMemBlock(memuid);
+		return NULL;
+	}
+
+	if (uid)
+		*uid = memuid;
+
+	return addr;
+}
+
+void gpu_unmap_free(SceUID uid){
+	void *addr;
+
+	if (sceKernelGetMemBlockBase(uid, &addr) < 0)
+		return;
+
+	sceGxmUnmapMemory(addr);
+
+	sceKernelFreeMemBlock(uid);
+}
+
+
+void *gpu_vertex_usse_alloc_map(size_t size, SceUID *uid, unsigned int *usse_offset){
+	SceUID memuid;
+	void *addr;
+
+	size = ALIGN(size, 4 * 1024);
+
+	memuid = sceKernelAllocMemBlock("gpu_vertex_usse",
+		SCE_KERNEL_MEMBLOCK_TYPE_USER_RW_UNCACHE, size, NULL);
+	if (memuid < 0)
+		return NULL;
+
+	if (sceKernelGetMemBlockBase(memuid, &addr) < 0)
+		return NULL;
+
+	if (sceGxmMapVertexUsseMemory(addr, size, usse_offset) < 0)
+		return NULL;
+
+	if (uid)
+		*uid = memuid;
+
+	return addr;
+}
+
+void gpu_vertex_usse_unmap_free(SceUID uid){
+	void *addr;
+
+	if (sceKernelGetMemBlockBase(uid, &addr) < 0)
+		return;
+
+	sceGxmUnmapVertexUsseMemory(addr);
+
+	sceKernelFreeMemBlock(uid);
+}
+
+void *gpu_fragment_usse_alloc_map(size_t size, SceUID *uid, unsigned int *usse_offset){
+	SceUID memuid;
+	void *addr;
+
+	size = ALIGN(size, 4 * 1024);
+
+	memuid = sceKernelAllocMemBlock("gpu_fragment_usse",
+		SCE_KERNEL_MEMBLOCK_TYPE_USER_RW_UNCACHE, size, NULL);
+	if (memuid < 0)
+		return NULL;
+
+	if (sceKernelGetMemBlockBase(memuid, &addr) < 0)
+		return NULL;
+
+	if (sceGxmMapFragmentUsseMemory(addr, size, usse_offset) < 0)
+		return NULL;
+
+	if (uid)
+		*uid = memuid;
+
+	return addr;
+}
+
+void gpu_fragment_usse_unmap_free(SceUID uid){
+	void *addr;
+
+	if (sceKernelGetMemBlockBase(uid, &addr) < 0)
+		return;
+
+	sceGxmUnmapFragmentUsseMemory(addr);
+
+	sceKernelFreeMemBlock(uid);
+}
+
+void *shader_patcher_host_alloc_cb(void *user_data, unsigned int size){
+	return malloc(size);
+}
+
+void shader_patcher_host_free_cb(void *user_data, void *mem){
+	return free(mem);
 }

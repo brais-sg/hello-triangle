@@ -5,9 +5,10 @@ LIBS = -lc -lSceCommonDialog_stub -lSceLibKernel_stub \
 	-lSceDisplay_stub -lSceGxm_stub -lSceSysmodule_stub -lSceCtrl_stub \
 	-lSceTouch_stub -lm -lSceAppMgr_stub -lSceAppUtil_stub -lmathneon -lSceShaccCg_stub
 
+CSOURCES    := .
 CPPSOURCES	:= .
 
-CFILES	 := 
+CFILES	 := $(foreach dir,$(CSOURCES), $(wildcard $(dir)/*.c))
 CPPFILES := $(foreach dir,$(CPPSOURCES), $(wildcard $(dir)/*.cpp))
 BINFILES := $(foreach dir,$(DATA), $(wildcard $(dir)/*.bin))
 OBJS     := $(addsuffix .o,$(BINFILES)) $(CFILES:.c=.o) $(CPPFILES:.cpp=.o)

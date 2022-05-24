@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "callbacks.h": "c",
-        "pspdisplay.h": "c"
+        "pspdisplay.h": "c",
+        "vitasdk.h": "c"
     }
 }
