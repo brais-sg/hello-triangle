@@ -375,17 +375,17 @@ int main(int argc, char* argv[]){
 
 	sceGxmShaderPatcherCreateVertexProgram(gxm_shader_patcher, gxm_color_buffer_vertex_program_id, color_buffer_attributes, 2, &color_buffer_stream, 1, &gxm_color_buffer_vertex_program_patched);
 
-	SceGxmBlendInfo color_buffer_blend_info;
-	memset(&color_buffer_blend_info, 0, sizeof(color_buffer_blend_info));
-	color_buffer_blend_info.colorMask = SCE_GXM_COLOR_MASK_NONE;
-	color_buffer_blend_info.colorFunc = SCE_GXM_BLEND_FUNC_NONE;
-	color_buffer_blend_info.alphaFunc = SCE_GXM_BLEND_FUNC_NONE;
-	color_buffer_blend_info.colorSrc = SCE_GXM_BLEND_FACTOR_ZERO;
-	color_buffer_blend_info.colorDst = SCE_GXM_BLEND_FACTOR_ZERO;
-	color_buffer_blend_info.alphaSrc = SCE_GXM_BLEND_FACTOR_ZERO;
-	color_buffer_blend_info.alphaDst = SCE_GXM_BLEND_FACTOR_ZERO;
+	// SceGxmBlendInfo color_buffer_blend_info;
+	// memset(&color_buffer_blend_info, 0, sizeof(color_buffer_blend_info));
+	// color_buffer_blend_info.colorMask = SCE_GXM_COLOR_MASK_NONE;
+	// color_buffer_blend_info.colorFunc = SCE_GXM_BLEND_FUNC_NONE;
+	// color_buffer_blend_info.alphaFunc = SCE_GXM_BLEND_FUNC_NONE;
+	// color_buffer_blend_info.colorSrc = SCE_GXM_BLEND_FACTOR_ZERO;
+	// color_buffer_blend_info.colorDst = SCE_GXM_BLEND_FACTOR_ZERO;
+	// color_buffer_blend_info.alphaSrc = SCE_GXM_BLEND_FACTOR_ZERO;
+	// color_buffer_blend_info.alphaDst = SCE_GXM_BLEND_FACTOR_ZERO;
 
-	sceGxmShaderPatcherCreateFragmentProgram(gxm_shader_patcher, gxm_color_buffer_fragment_program_id, SCE_GXM_OUTPUT_REGISTER_FORMAT_UCHAR4, SCE_GXM_MULTISAMPLE_NONE, &color_buffer_blend_info, color_buffer_vertex_program, &gxm_color_buffer_fragment_program_patched);
+	sceGxmShaderPatcherCreateFragmentProgram(gxm_shader_patcher, gxm_color_buffer_fragment_program_id, SCE_GXM_OUTPUT_REGISTER_FORMAT_UCHAR4, SCE_GXM_MULTISAMPLE_NONE, NULL, color_buffer_vertex_program, &gxm_color_buffer_fragment_program_patched);
 
 	// Create the triangle
 	float mvpMatrix_identity[] = {
@@ -401,9 +401,9 @@ int main(int argc, char* argv[]){
 	SceUID color_indices_uid;
 	unsigned short *const color_indices_data = (unsigned short*) gpu_alloc_map(SCE_KERNEL_MEMBLOCK_TYPE_USER_RW_UNCACHE, SCE_GXM_MEMORY_ATTRIB_READ, 3 * sizeof(unsigned short), &color_indices_uid);
 
-	color_vertices_data[0].position = (vector3f) {0.f, -.8f, 0.f};
-	color_vertices_data[1].position = (vector3f) {-.8, .8f, 0.f};
-	color_vertices_data[2].position = (vector3f) {.8f, .8f, 0.f};
+	color_vertices_data[0].position = (vector3f) {0.f, .8f, 0.f};
+	color_vertices_data[1].position = (vector3f) {-.8, -.8f, 0.f};
+	color_vertices_data[2].position = (vector3f) {.8f, -.8f, 0.f};
 
 	color_vertices_data[0].color    = (vector4f) {1.f, 0.f, 0.f, 1.f};
 	color_vertices_data[1].color    = (vector4f) {0.f, 1.f, 0.f, 1.f};
