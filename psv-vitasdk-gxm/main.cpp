@@ -25,6 +25,50 @@
 
 // #include "gpu_utils.h"
 
+// SHADERS
+#include "shader_bin/clear_v.h"
+#include "shader_bin/clear_f.h"
+#include "shader_bin/color_v.h"
+#include "shader_bin/color_f.h"
+
+typedef struct {
+	float x, y;
+} vector2f;
+
+typedef struct {
+	union { float x; float r; };
+	union { float y; float g; };
+	union { float z; float b; };
+} vector3f;
+
+typedef struct {
+	union { float x; float r; };
+	union { float y; float g; };
+	union { float z; float b; };
+	union { float w; float a; };
+} vector4f;
+
+struct clear_vertex {
+	vector2f position;
+};
+
+struct position_vertex {
+	vector3f position;
+};
+
+struct color_vertex {
+	vector3f position;
+	vector4f color;
+};
+
+
+
+static const SceGxmProgram *const gxm_program_clear_v  = (SceGxmProgram *) &clear_v_gxp;
+static const SceGxmProgram *const gxm_program_clear_f  = (SceGxmProgram *) &clear_f_gxp;
+static const SceGxmProgram *const gxm_program_color_v  = (SceGxmProgram *) &color_v_gxp;
+static const SceGxmProgram *const gxm_program_color_f  = (SceGxmProgram *) &color_f_gxp;
+
+
 #define DISPLAY_WIDTH 960
 #define DISPLAY_HEIGHT 544
 #define DISPLAY_STRIDE 1024
@@ -86,6 +130,26 @@ static void *gxm_shader_patcher_vertex_usse_addr;
 static SceUID gxm_shader_patcher_fragment_usse_uid;
 static void *gxm_shader_patcher_fragment_usse_addr;
 
+static SceGxmShaderPatcherId gxm_color_buffer_vertex_program_id;
+static SceGxmShaderPatcherId gxm_color_buffer_fragment_program_id;
+static const SceGxmProgramParameter *gxm_color_buffer_vertex_program_position_param;
+static const SceGxmProgramParameter *gxm_color_buffer_vertex_program_u_mvp_matrix_param;
+static SceGxmVertexProgram *gxm_color_buffer_vertex_program_patched;
+static SceGxmFragmentProgram *gxm_color_buffer_fragment_program_patched;
+
+static SceGxmShaderPatcherId gxm_clear_vertex_program_id;
+static SceGxmShaderPatcherId gxm_clear_fragment_program_id;
+static const SceGxmProgramParameter *gxm_clear_vertex_program_position_param;
+static const SceGxmProgramParameter *gxm_clear_fragment_program_u_clear_color_param;
+static SceGxmVertexProgram *gxm_clear_vertex_program_patched;
+static SceGxmFragmentProgram *gxm_clear_fragment_program_patched;
+
+static SceGxmShaderPatcherId gxm_cube_vertex_program_id;
+static SceGxmShaderPatcherId gxm_cube_fragment_program_id;
+
+
+
+
 static void *gpu_alloc_map(SceKernelMemBlockType type, SceGxmMemoryAttribFlags gpu_attrib, size_t size, SceUID *uid);
 static void gpu_unmap_free(SceUID uid);
 static void *gpu_vertex_usse_alloc_map(size_t size, SceUID *uid, unsigned int *usse_offset);
@@ -95,6 +159,18 @@ static void gpu_fragment_usse_unmap_free(SceUID uid);
 
 static void *shader_patcher_host_alloc_cb(void *user_data, unsigned int size);
 static void shader_patcher_host_free_cb(void *user_data, void *mem);
+
+void set_vertex_default_uniform_data(const SceGxmProgramParameter *param, unsigned int component_count, const void *data){
+	void *uniform_buffer;
+	sceGxmReserveVertexDefaultUniformBuffer(gxm_context, &uniform_buffer);
+	sceGxmSetUniformDataF(uniform_buffer, param, 0, component_count, (const float*) data);
+}
+
+void set_fragment_default_uniform_data(const SceGxmProgramParameter *param, unsigned int component_count, const void *data){
+	void *uniform_buffer;
+	sceGxmReserveFragmentDefaultUniformBuffer(gxm_context, &uniform_buffer);
+	sceGxmSetUniformDataF(uniform_buffer, param, 0, component_count, (const float*) data);
+}
 
 
 // Before doing nothing: Take a look at xerpi's gxmfun repository
@@ -218,6 +294,113 @@ int main(int argc, char* argv[]){
     // https://github.com/xerpi/gxmfun/blob/c0e3b8259880286d8ca507123b4b9d635f33d7b4/source/main.c#L333
     
 
+	// Let's create the shaders (https://github.com/xerpi/gxmfun/blob/c0e3b8259880286d8ca507123b4b9d635f33d7b4/source/main.c#L382)
+	sceGxmShaderPatcherRegisterProgram(gxm_shader_patcher, gxm_program_clear_v, &gxm_clear_vertex_program_id);
+	sceGxmShaderPatcherRegisterProgram(gxm_shader_patcher, gxm_program_clear_f, &gxm_clear_fragment_program_id);
+
+	const SceGxmProgram *clear_vertex_program = sceGxmShaderPatcherGetProgramFromId(gxm_clear_vertex_program_id);
+	const SceGxmProgram *clear_fragment_program = sceGxmShaderPatcherGetProgramFromId(gxm_clear_fragment_program_id);
+
+	gxm_clear_vertex_program_position_param = sceGxmProgramFindParameterByName(clear_vertex_program, "position");
+	gxm_clear_fragment_program_u_clear_color_param = sceGxmProgramFindParameterByName(clear_fragment_program, "u_clear_color");
+
+	SceGxmVertexAttribute clear_vertex_attribute;
+	SceGxmVertexStream clear_vertex_stream;
+	clear_vertex_attribute.streamIndex = 0;
+	clear_vertex_attribute.offset = 0;
+	clear_vertex_attribute.format = SCE_GXM_ATTRIBUTE_FORMAT_F32;
+	clear_vertex_attribute.componentCount = 2;
+	clear_vertex_attribute.regIndex = sceGxmProgramParameterGetResourceIndex(
+	gxm_clear_vertex_program_position_param);
+	clear_vertex_stream.stride = sizeof(struct clear_vertex);
+	clear_vertex_stream.indexSource = SCE_GXM_INDEX_SOURCE_INDEX_16BIT;
+
+	sceGxmShaderPatcherCreateVertexProgram(gxm_shader_patcher,
+		gxm_clear_vertex_program_id, &clear_vertex_attribute,
+		1, &clear_vertex_stream, 1, &gxm_clear_vertex_program_patched);
+
+	sceGxmShaderPatcherCreateFragmentProgram(gxm_shader_patcher,
+		gxm_clear_fragment_program_id, SCE_GXM_OUTPUT_REGISTER_FORMAT_UCHAR4,
+		SCE_GXM_MULTISAMPLE_NONE, NULL, clear_vertex_program,
+		&gxm_clear_fragment_program_patched);
+
+	SceUID clear_vertices_uid;
+	struct clear_vertex *const clear_vertices_data = (struct clear_vertex*) gpu_alloc_map(SCE_KERNEL_MEMBLOCK_TYPE_USER_RW_UNCACHE, SCE_GXM_MEMORY_ATTRIB_READ, 4 * sizeof(struct clear_vertex), &clear_vertices_uid);
+
+	SceUID clear_indices_uid;
+	unsigned short *const clear_indices_data = (unsigned short*) gpu_alloc_map(SCE_KERNEL_MEMBLOCK_TYPE_USER_RW_UNCACHE, SCE_GXM_MEMORY_ATTRIB_READ, 4 * sizeof(unsigned short), &clear_indices_uid);
+
+	clear_vertices_data[0].position = (vector2f){-1.0f, -1.0f};
+	clear_vertices_data[1].position = (vector2f){ 1.0f, -1.0f};
+	clear_vertices_data[2].position = (vector2f){-1.0f,  1.0f};
+	clear_vertices_data[3].position = (vector2f){ 1.0f,  1.0f};
+
+	clear_indices_data[0] = 0;
+	clear_indices_data[1] = 1;
+	clear_indices_data[2] = 2;
+	clear_indices_data[3] = 3;
+
+	// Okay, now the other shader
+	sceGxmShaderPatcherRegisterProgram(gxm_shader_patcher, gxm_program_color_v, &gxm_color_buffer_vertex_program_id);
+	sceGxmShaderPatcherRegisterProgram(gxm_shader_patcher, gxm_program_color_f, &gxm_color_buffer_fragment_program_id);
+
+	const SceGxmProgram *color_buffer_vertex_program = sceGxmShaderPatcherGetProgramFromId(gxm_color_buffer_vertex_program_id);
+
+	gxm_color_buffer_vertex_program_position_param = sceGxmProgramFindParameterByName(color_buffer_vertex_program, "position");
+	gxm_color_buffer_vertex_program_u_mvp_matrix_param = sceGxmProgramFindParameterByName(color_buffer_vertex_program, "u_mvp_matrix");
+
+	SceGxmVertexAttribute color_buffer_attributes;
+	SceGxmVertexStream color_buffer_stream;
+	color_buffer_attributes.streamIndex = 0;
+	color_buffer_attributes.offset = 0;
+	color_buffer_attributes.format = SCE_GXM_ATTRIBUTE_FORMAT_F32;
+	color_buffer_attributes.componentCount = 3;
+	color_buffer_attributes.regIndex = sceGxmProgramParameterGetResourceIndex(gxm_color_buffer_vertex_program_position_param);
+	color_buffer_stream.stride = sizeof(struct position_vertex);
+	color_buffer_stream.indexSource = SCE_GXM_INDEX_SOURCE_INDEX_16BIT;
+
+	sceGxmShaderPatcherCreateVertexProgram(gxm_shader_patcher, gxm_color_buffer_vertex_program_id, &color_buffer_attributes, 1, &color_buffer_stream, 1, &gxm_color_buffer_vertex_program_patched);
+
+	SceGxmBlendInfo color_buffer_blend_info;
+	memset(&color_buffer_blend_info, 0, sizeof(color_buffer_blend_info));
+	color_buffer_blend_info.colorMask = SCE_GXM_COLOR_MASK_NONE;
+	color_buffer_blend_info.colorFunc = SCE_GXM_BLEND_FUNC_NONE;
+	color_buffer_blend_info.alphaFunc = SCE_GXM_BLEND_FUNC_NONE;
+	color_buffer_blend_info.colorSrc = SCE_GXM_BLEND_FACTOR_ZERO;
+	color_buffer_blend_info.colorDst = SCE_GXM_BLEND_FACTOR_ZERO;
+	color_buffer_blend_info.alphaSrc = SCE_GXM_BLEND_FACTOR_ZERO;
+	color_buffer_blend_info.alphaDst = SCE_GXM_BLEND_FACTOR_ZERO;
+
+	sceGxmShaderPatcherCreateFragmentProgram(gxm_shader_patcher, gxm_color_buffer_fragment_program_id, SCE_GXM_OUTPUT_REGISTER_FORMAT_UCHAR4, SCE_GXM_MULTISAMPLE_NONE, &color_buffer_blend_info, color_buffer_vertex_program, &gxm_color_buffer_fragment_program_patched);
+
+
+
+
+
+
+	SceCtrlData pad;
+	memset(&pad, 0, sizeof(pad));
+
+	bool running = true;
+	while(running){
+		sceCtrlPeekBufferPositive(0, &pad, 1);
+		if(pad.buttons & SCE_CTRL_START) running = false;
+
+		
+		sceGxmBeginScene(gxm_context, 0, gxm_render_target, NULL, NULL, gxm_sync_objects[gxm_back_buffer_index], &gxm_color_surfaces[gxm_back_buffer_index], &gxm_depth_stencil_surface);
+
+		// Clear screen
+		sceGxmSetVertexProgram(gxm_context, gxm_clear_vertex_program_patched);
+		sceGxmSetFragmentProgram(gxm_context, gxm_clear_fragment_program_patched);
+
+		static const float clear_color[4] = {0.3f, 0.2f, 0.3f, 1.0f};
+
+		set_fragment_default_uniform_data(gxm_clear_fragment_program_u_clear_color_param, sizeof(clear_color) / sizeof(float), clear_color);
+
+		sceGxmSetFrontStencilFunc(gxm_context, SCE_GXM_STENCIL_FUNC_ALWAYS, SCE_GXM_STENCIL_OP_ZERO, SCE_GXM_STENCIL_OP_ZERO, SCE_GXM_STENCIL_OP_ZERO, 0, 0xFF);
+
+		sceGxmSetVertexStream(gxm_context, 0, clear_vertices_data);
+		sceGxmDraw(gxm_context, SCE_GXM_PRIMITIVE_TRIANGLE_STRIP, SCE_GXM_INDEX_FORMAT_U16, clear_indices_data, 4);
 
 
 
@@ -225,6 +408,35 @@ int main(int argc, char* argv[]){
 
 
 
+
+		sceGxmEndScene(gxm_context, NULL, NULL);
+		sceGxmPadHeartbeat(&gxm_color_surfaces[gxm_back_buffer_index], gxm_sync_objects[gxm_back_buffer_index]);
+
+
+		struct display_queue_callback_data queue_cb_data;
+		queue_cb_data.addr = gxm_color_surfaces_addr[gxm_back_buffer_index];
+
+		sceGxmDisplayQueueAddEntry(gxm_sync_objects[gxm_front_buffer_index], gxm_sync_objects[gxm_back_buffer_index], &queue_cb_data);
+
+		// Swap chain
+		gxm_front_buffer_index = gxm_back_buffer_index;
+		gxm_back_buffer_index = (gxm_back_buffer_index + 1) % DISPLAY_BUFFER_COUNT;
+	}
+
+	sceGxmDisplayQueueFinish();
+	sceGxmFinish(gxm_context);
+
+
+	gpu_unmap_free(clear_vertices_uid);
+	gpu_unmap_free(clear_indices_uid);
+
+
+
+	sceGxmShaderPatcherReleaseVertexProgram(gxm_shader_patcher,  gxm_color_buffer_vertex_program_patched);
+	sceGxmShaderPatcherReleaseFragmentProgram(gxm_shader_patcher, gxm_color_buffer_fragment_program_patched);
+
+	sceGxmShaderPatcherReleaseVertexProgram(gxm_shader_patcher, gxm_clear_vertex_program_patched);
+	sceGxmShaderPatcherReleaseFragmentProgram(gxm_shader_patcher, gxm_clear_fragment_program_patched);
 
     sceGxmShaderPatcherDestroy(gxm_shader_patcher);
     sceGxmDestroyRenderTarget(gxm_render_target);
