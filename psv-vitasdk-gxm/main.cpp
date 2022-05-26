@@ -418,10 +418,19 @@ int main(int argc, char* argv[]){
 	SceCtrlData pad;
 	memset(&pad, 0, sizeof(pad));
 
+	float cr = 0.f;
+	float cg = 0.f;
+
 	bool running = true;
 	while(running){
 		sceCtrlPeekBufferPositive(0, &pad, 1);
 		if(pad.buttons & SCE_CTRL_START) running = false;
+
+		cr = (float) pad.lx / 127.f;
+		cg = (float) pad.ly / 127.f;
+
+		if(cr < 0.f) cr = 0.f;
+		if(cg < 0.f) cg = 0.f;
 
 		
 		sceGxmBeginScene(gxm_context, 0, gxm_render_target, NULL, NULL, gxm_sync_objects[gxm_back_buffer_index], &gxm_color_surfaces[gxm_back_buffer_index], &gxm_depth_stencil_surface);
@@ -430,7 +439,7 @@ int main(int argc, char* argv[]){
 		sceGxmSetVertexProgram(gxm_context, gxm_clear_vertex_program_patched);
 		sceGxmSetFragmentProgram(gxm_context, gxm_clear_fragment_program_patched);
 
-		static const float clear_color[4] = {0.1f, 0.3f, 0.2f, 1.0f};
+		static const float clear_color[4] = {cr, cg, 0.f, 1.0f};
 
 		set_fragment_default_uniform_data(gxm_clear_fragment_program_u_clear_color_param, sizeof(clear_color) / sizeof(float), clear_color);
 
@@ -452,11 +461,7 @@ int main(int argc, char* argv[]){
 		sceGxmDraw(gxm_context, SCE_GXM_PRIMITIVE_TRIANGLES, SCE_GXM_INDEX_FORMAT_U16, color_indices_data, 3);
 
 
-
-
 		// End of scene?
-
-
 		sceGxmEndScene(gxm_context, NULL, NULL);
 		sceGxmPadHeartbeat(&gxm_color_surfaces[gxm_back_buffer_index], gxm_sync_objects[gxm_back_buffer_index]);
 
