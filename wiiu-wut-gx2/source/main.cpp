@@ -16,7 +16,9 @@
 #include <gx2/draw.h>
 #include <gx2/mem.h>
 #include <gx2/utils.h>
+// #include <gx2/shaders.h>
 
+#include "shaders/basic.h"
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -29,8 +31,9 @@ int main(int argc, char** argv){
     nn::ac::GetStartupId(&configId);
     nn::ac::Connect(configId);
 
-
-    // TODO: Everything
+    
+    GX2Invalidate(GX2_INVALIDATE_MODE_CPU_SHADER, basic_VS.program, basic_VS.size);
+    GX2Invalidate(GX2_INVALIDATE_MODE_CPU_SHADER, basic_PS.program, basic_PS.size);
 
 
 
