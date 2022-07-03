@@ -13,9 +13,10 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_opengles2.h>
+#include "SDL.h"
+#include "SDL_opengles2.h"
 
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
