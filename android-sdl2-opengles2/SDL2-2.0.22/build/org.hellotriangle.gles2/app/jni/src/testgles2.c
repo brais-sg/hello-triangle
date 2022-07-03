@@ -15,6 +15,8 @@
 #include <string.h>
 #include <stdbool.h>
 
+#include <android/log.h>
+
 #include "SDL.h"
 #include "SDL_opengles2.h"
 
@@ -59,9 +61,10 @@ int main(int argc, char* argv[]){
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
     // Create OpenGL Window
-    window = SDL_CreateWindow("hello triangle (OpenGL ES 2.0 + SDL2)", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+    window = SDL_CreateWindow("hello triangle (OpenGL ES 2.0 + SDL2)", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_FULLSCREEN);
     if(!window){
         fprintf(stderr, "Cannot create Window: %s\n", SDL_GetError());
+	__android_log_print(ANDROID_LOG_DEBUG, "HELLOTRI", "Cannot create Window: %s\n", SDL_GetError());
         exit(-2);
     }
 
@@ -75,7 +78,9 @@ int main(int argc, char* argv[]){
     printf("Vendor  : %s\n", glGetString(GL_VENDOR));
     printf("Version : %s\n", glGetString(GL_VERSION));
 
-    
+    __android_log_print(ANDROID_LOG_DEBUG, "HELLOTRI", "Renderer: %s\n", glGetString(GL_RENDERER));
+    __android_log_print(ANDROID_LOG_DEBUG, "HELLOTRI", "Vendor:   %s\n", glGetString(GL_VENDOR));
+    __android_log_print(ANDROID_LOG_DEBUG, "HELLOTRI", "Version:  %s\n", glGetString(GL_VERSION));
 
     SDL_Event e;
     bool running = true;
@@ -97,6 +102,8 @@ int main(int argc, char* argv[]){
 
     glLinkProgram(shaderProgram);
     glUseProgram(shaderProgram);
+
+    __android_log_print(ANDROID_LOG_DEBUG, "HELLOTRI","ShaderProgram: %d\n", (int) shaderProgram);
 
     GLint positionAttrib = glGetAttribLocation(shaderProgram, "v_Input");
     GLint colorAttrib    = glGetAttribLocation(shaderProgram, "c_Input");
