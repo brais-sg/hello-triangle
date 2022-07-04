@@ -39,10 +39,13 @@ const char* vShaderSource =
     "}\n";
 
 const char* fShaderSource = 
+	"#ifdef GL_ES\n"
+	"precision mediump float;\n"
+	"#endif\n"
     "varying vec4 colorFragment;\n"
     "void main(){\n"
     "   gl_FragColor = colorFragment;\n"
-    "};\n";
+    "}\n";
 
 int main(int argc, char* argv[]){
     if(SDL_Init(SDL_INIT_EVERYTHING) < 0){
