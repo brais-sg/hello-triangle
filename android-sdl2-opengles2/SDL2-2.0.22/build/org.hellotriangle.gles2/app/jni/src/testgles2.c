@@ -32,19 +32,16 @@ SDL_GLContext gContext;
 const char* vShaderSource = 
     "attribute vec3 v_Input;\n"
     "attribute vec4 c_Input;\n"
-    "varying vec4 c_Fragment;\n"
+    "varying vec4 colorFragment;\n"
     "void main(){\n"
-    "   c_Fragment  = c_Input;\n"
+    "   colorFragment  = c_Input;\n"
     "   gl_Position = vec4(v_Input.xyz, 1.0);\n"
     "}\n";
 
 const char* fShaderSource = 
-    "#ifdef GL_ES\n"
-    "precision mediump float;\n"
-    "#endif\n"
-    "varying vec4 c_Fragment;\n"
+    "varying vec4 colorFragment;\n"
     "void main(){\n"
-    "   gl_FragColor = c_Fragment;\n"
+    "   gl_FragColor = colorFragment;\n"
     "};\n";
 
 int main(int argc, char* argv[]){
