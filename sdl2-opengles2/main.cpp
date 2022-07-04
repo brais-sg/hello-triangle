@@ -42,7 +42,7 @@ const char* fShaderSource =
     "varying vec4 c_Fragment;\n"
     "void main(){\n"
     "   gl_FragColor = c_Fragment;\n"
-    "};\n";
+    "}\n";
 
 int main(int argc, char* argv[]){
     if(SDL_Init(SDL_INIT_EVERYTHING) < 0){
