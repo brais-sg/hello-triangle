@@ -91,16 +91,54 @@ int main(int argc, char* argv[]){
     GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertexShader, 1, &vShaderSource, NULL);
     glCompileShader(vertexShader);
+    
+    GLint vertex_compiled;
+	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &vertex_compiled);
+	
+	if (vertex_compiled != GL_TRUE){
+		GLsizei log_length = 0;
+		GLchar message[1024];
+		glGetShaderInfoLog(vertexShader, 1024, &log_length, message);
+		__android_log_print(ANDROID_LOG_DEBUG, "HELLOTRI", "VSHADER ERR: %s\n", message);
+	}
+	
 
     GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragmentShader, 1, &fShaderSource, NULL);
     glCompileShader(fragmentShader);
+    
+    GLint fragment_compiled;
+	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &fragment_compiled);
+	
+	if (fragment_compiled != GL_TRUE){
+		GLsizei log_length = 0;
+		GLchar message[1024];
+		glGetShaderInfoLog(fragmentShader, 1024, &log_length, message);
+		__android_log_print(ANDROID_LOG_DEBUG, "HELLOTRI", "FSHADER ERR: %s\n", message);
+	}
+	
 
     GLuint shaderProgram = glCreateProgram();
+    
+    glBindAttribLocation(shaderProgram, 0, "v_Input");
+    glBindAttribLocation(shaderProgram, 1, "c_Input");
+    
     glAttachShader(shaderProgram, vertexShader);
     glAttachShader(shaderProgram, fragmentShader);
 
     glLinkProgram(shaderProgram);
+    
+    
+    GLint program_linked;
+	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &program_linked);
+	if (program_linked != GL_TRUE){
+		GLsizei log_length = 0;
+		GLchar message[1024];
+		glGetProgramInfoLog(shaderProgram, 1024, &log_length, message);
+		__android_log_print(ANDROID_LOG_DEBUG, "HELLOTRI", "LINK ERR: %s\n", message);
+	}
+
+    
     glUseProgram(shaderProgram);
 
     __android_log_print(ANDROID_LOG_DEBUG, "HELLOTRI","ShaderProgram: %d\n", (int) shaderProgram);
